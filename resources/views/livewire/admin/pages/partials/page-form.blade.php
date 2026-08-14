@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="mt-8" x-data="{ tab: @js(array_key_first(config('cms.locales'))) }">
+        <div class="mt-8" x-data="{ tab: @js(array_key_first(config('cms.locales'))), slugTouched: {} }">
             <h3 class="text-lg font-medium text-gray-900">Translations</h3>
 
             <div class="border-b border-gray-200 mt-4">
@@ -74,7 +74,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Title ({{ $label }})</label>
                             <input type="text" wire:model.live="translations.{{ $locale }}.title"
-                                @change="const el = document.querySelector('[data-slug-field=&quot;{{ $locale }}&quot;]'); if (el) { el.value = $event.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); el.dispatchEvent(new Event('input', { bubbles: true })); }"
+                                @input="if (! slugTouched['{{ $locale }}']) { const slug = $event.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); const el = document.querySelector('[data-slug-field=&quot;{{ $locale }}&quot;]'); if (el) { el.value = slug; } $wire.set('translations.{{ $locale }}.slug', slug, false); }"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             @error('translations.' . $locale . '.title')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -84,6 +84,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Slug ({{ $label }})</label>
                             <input type="text" data-slug-field="{{ $locale }}" wire:model.live="translations.{{ $locale }}.slug"
+                                @input="slugTouched['{{ $locale }}'] = true"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             @error('translations.' . $locale . '.slug')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
