@@ -1,5 +1,5 @@
 {{--
-    Template Section: Acordion (acordion)
+    Template Section: Hero homepage (hero-homepage)
     =========================================================
     File ini digenerate otomatis saat Section Type dibuat.
     Edit bebas untuk menyesuaikan tampilan section di halaman publik.

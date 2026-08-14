@@ -89,37 +89,71 @@
                             <div class="truncate text-xs text-slate-400">{{ Auth::user()->email }}</div>
                         </div>
                     </div>
-
-                    <div class="mt-3 flex items-center justify-between border-t border-slate-800 pt-3 px-2">
-                        <a href="{{ route('profile.show') }}" class="text-xs font-medium text-slate-400 hover:text-white">Profile</a>
-                        <form method="POST" action="{{ route('logout') }}" x-data>
-                            @csrf
-                            <button type="submit" class="text-xs font-medium text-slate-400 hover:text-white">Log Out</button>
-                        </form>
-                    </div>
                 </div>
             </aside>
 
             <!-- Main column -->
             <div class="min-w-0 flex-1 lg:pl-64">
-                <!-- Mobile top bar -->
-                <div class="flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 lg:hidden">
-                    <button @click="sidebarOpen = ! sidebarOpen" class="inline-flex items-center justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none" aria-label="Toggle navigation">
+                @php
+                    $currentPageLabel = match (true) {
+                        request()->routeIs('admin.pages.*') => __('Pages'),
+                        request()->routeIs('admin.section-types.*') => __('Section Types'),
+                        request()->routeIs('admin.settings.*') => __('Settings'),
+                        request()->routeIs('profile.show') => __('Profile'),
+                        request()->routeIs('api-tokens.*') => __('API Tokens'),
+                        default => __('Dashboard'),
+                    };
+                @endphp
+
+                <!-- Top navbar -->
+                <nav class="flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-6">
+                    <button @click="sidebarOpen = ! sidebarOpen" class="inline-flex items-center justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none lg:hidden" aria-label="Toggle navigation">
                         <svg class="size-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
-                    <span class="text-sm font-semibold text-gray-900">Admin Panel</span>
-                </div>
 
-                <!-- Page Heading -->
-                @if (isset($header))
-                    <header class="border-b border-gray-200 bg-white shadow-sm">
-                        <div class="mx-auto px-4 py-6 sm:px-6 lg:px-8">
-                            {{ $header }}
-                        </div>
-                    </header>
-                @endif
+                    <span class="text-base font-semibold text-gray-900">{{ $currentPageLabel }}</span>
+
+                    <div class="ms-auto flex items-center gap-3">
+                        <!-- Profile dropdown -->
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <span class="inline-flex rounded-md">
+                                    <button type="button" class="inline-flex items-center rounded-full p-1 text-gray-500 hover:text-gray-700 focus:outline-none focus:bg-gray-100 active:bg-gray-100 transition ease-in-out duration-150">
+                                        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+                                            <img class="size-9 rounded-full object-cover ring-1 ring-gray-200" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                        @else
+                                            <span class="text-sm font-medium">{{ Auth::user()->name }}</span>
+                                            <svg class="ms-1 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        @endif
+                                    </button>
+                                </span>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <div class="px-4 py-2 text-xs text-gray-400">
+                                    {{ Auth::user()->name }}
+                                </div>
+
+                                <x-dropdown-link href="{{ route('profile.show') }}">
+                                    {{ __('Profile') }}
+                                </x-dropdown-link>
+
+                                <div class="border-t border-gray-200"></div>
+
+                                <form method="POST" action="{{ route('logout') }}" x-data>
+                                    @csrf
+                                    <x-dropdown-link href="{{ route('logout') }}" @click.prevent="$root.submit();">
+                                        {{ __('Log Out') }}
+                                    </x-dropdown-link>
+                                </form>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+                </nav>
 
                 <!-- Page Content -->
                 <main>
