@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Livewire\Admin\SectionTypes;
+
+use App\Models\SectionType;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+
+#[Layout('layouts.app')]
+class Create extends SectionTypeForm
+{
+    public function save()
+    {
+        $validated = $this->validate(array_merge($this->rules(), [
+            'slug' => ['required', 'string', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'unique:section_types,slug'],
+        ]), $this->validationMessages());
+
+        SectionType::create([
+            'name' => $validated['name'],
+            'slug' => $validated['slug'],
+            'icon' => $validated['icon'],
+            'fields' => $this->normalizeFields(),
+        ]);
+
+        session()->flash('status', 'Section type created successfully.');
+
+        return redirect()->route('admin.section-types.index');
+    }
+
+    public function render()
+    {
+        return view('livewire.admin.section-types.create');
+    }
+}

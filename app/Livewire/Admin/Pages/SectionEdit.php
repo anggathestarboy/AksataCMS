@@ -1,0 +1,197 @@
+<?php
+
+namespace App\Livewire\Admin\Pages;
+
+use App\Models\Page;
+use App\Models\Section;
+use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
+
+#[Layout('layouts.app')]
+class SectionEdit extends Component
+{
+    use WithFileUploads;
+
+    public Page $page;
+
+    public Section $section;
+
+    /**
+     * @var array<string, array<string, mixed>>
+     */
+    public array $content = [];
+
+    /**
+     * @var array<string, array<string, mixed>>
+     */
+    public array $uploads = [];
+
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    public array $fields = [];
+
+    public function mount(Page $page, Section $section): void
+    {
+        abort_unless($section->page_id === $page->id, 404);
+
+        $this->page = $page;
+        $this->section = $section->load('sectionType');
+        $this->fields = $section->sectionType->fields ?? [];
+
+        foreach (config('cms.locales') as $locale => $label) {
+            $translation = $section->translations->firstWhere('locale', $locale);
+            $this->content[$locale] = $translation?->content ?? [];
+        }
+    }
+
+    public function addRepeaterItem(string $locale, string $path): void
+    {
+        $items = data_get($this->content, "$locale.$path", []);
+        $items[] = $this->emptyItemFor($locale, $path);
+        data_set($this->content, "$locale.$path", $items);
+    }
+
+    public function removeRepeaterItem(string $locale, string $path, int $index): void
+    {
+        $items = data_get($this->content, "$locale.$path", []);
+        unset($items[$index]);
+        data_set($this->content, "$locale.$path", array_values($items));
+    }
+
+    public function moveRepeaterItem(string $locale, string $path, int $index, string $direction): void
+    {
+        $items = data_get($this->content, "$locale.$path", []);
+        $target = $direction === 'up' ? $index - 1 : $index + 1;
+
+        if ($target < 0 || $target >= count($items)) {
+            return;
+        }
+
+        [$items[$index], $items[$target]] = [$items[$target], $items[$index]];
+
+        data_set($this->content, "$locale.$path", array_values($items));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function emptyItemFor(string $locale, string $path): array
+    {
+        $keys = array_values(array_filter(explode('.', $path), fn (string $segment): bool => ! is_numeric($segment)));
+
+        $definitions = $this->fields;
+        $item = [];
+
+        foreach ($keys as $key) {
+            $definition = collect($definitions)->firstWhere('key', $key);
+
+            if ($definition === null) {
+                $item = [];
+
+                break;
+            }
+
+            $definitions = $definition['fields'] ?? [];
+            $item = collect($definitions)
+                ->mapWithKeys(fn (array $field): array => [$field['key'] => $this->defaultFor($field)])
+                ->all();
+        }
+
+        return $item;
+    }
+
+    protected function defaultFor(array $field): mixed
+    {
+        return ($field['type'] ?? 'text') === 'repeater' ? [] : '';
+    }
+
+    public function save(): void
+    {
+        $this->validateContent();
+        $this->storeUploads();
+
+        foreach ($this->content as $locale => $content) {
+            $this->section->translations()->updateOrCreate(
+                ['locale' => $locale],
+                ['content' => $content],
+            );
+        }
+
+        session()->flash('status', 'Section content saved successfully.');
+    }
+
+    protected function validateContent(): void
+    {
+        $errors = [];
+
+        foreach (config('cms.locales') as $locale => $label) {
+            foreach ($this->fields as $field) {
+                $this->assertRequired($locale, $field, [], $errors);
+            }
+        }
+
+        if (count($errors)) {
+            throw ValidationException::withMessages($errors);
+        }
+    }
+
+    /**
+     * @param  array<int, string>  $pathSegments
+     * @param  array<string, string>  $errors
+     */
+    protected function assertRequired(string $locale, array $field, array $pathSegments, array &$errors): void
+    {
+        $statePath = implode('.', array_merge([$locale], $pathSegments, [$field['key']]));
+        $value = data_get($this->content, $statePath);
+
+        if (($field['required'] ?? false) && blank($value)) {
+            $errors["content.{$statePath}"] = "The {$field['label']} field is required in the {$locale} locale.";
+        }
+
+        if (($field['type'] ?? 'text') === 'repeater') {
+            $items = (array) data_get($this->content, $statePath, []);
+
+            foreach ($items as $index => $item) {
+                foreach (($field['fields'] ?? []) as $subField) {
+                    $this->assertRequired($locale, $subField, array_merge($pathSegments, [$field['key'], (string) $index]), $errors);
+                }
+            }
+        }
+    }
+
+    protected function storeUploads(): void
+    {
+        $this->walkUploads($this->uploads, $this->content);
+        $this->uploads = [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $uploads
+     * @param  array<string, mixed>  $content
+     */
+    protected function walkUploads(array $uploads, array &$content): void
+    {
+        foreach ($uploads as $key => $value) {
+            if ($value instanceof TemporaryUploadedFile) {
+                $content[$key] = $value->store('sections', 'public');
+            } elseif (is_array($value)) {
+                if (! isset($content[$key]) || ! is_array($content[$key])) {
+                    $content[$key] = [];
+                }
+
+                $this->walkUploads($value, $content[$key]);
+            }
+        }
+    }
+
+    public function render()
+    {
+        return view('livewire.admin.pages.section-edit', [
+            'sectionType' => $this->section->sectionType,
+        ]);
+    }
+}
