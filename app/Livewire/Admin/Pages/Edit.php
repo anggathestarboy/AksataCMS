@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\Pages;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\SectionType;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -34,12 +35,14 @@ class Edit extends PageForm
     {
         $this->validateForm();
 
-        $this->page->update([
-            'status' => $this->status,
-            'published_at' => $this->resolvePublishedAt(),
-        ]);
+        DB::transaction(function (): void {
+            $this->page->update([
+                'status' => $this->status,
+                'published_at' => $this->resolvePublishedAt(),
+            ]);
 
-        $this->syncTranslations($this->page);
+            $this->syncTranslations($this->page);
+        });
 
         session()->flash('status', 'Page updated successfully.');
 

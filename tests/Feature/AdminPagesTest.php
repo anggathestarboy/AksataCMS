@@ -159,6 +159,32 @@ class AdminPagesTest extends TestCase
         $this->assertSame(1, Page::where('status', 'draft')->count());
     }
 
+    public function test_can_create_multiple_pages_with_default_locale_only_without_duplicate_slug_error(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(Create::class)
+            ->set('status', 'draft')
+            ->set('translations', [
+                'id' => ['title' => 'Halaman Pertama', 'slug' => 'halaman-pertama', 'meta' => ['meta_title' => '', 'meta_description' => '', 'og_image' => '']],
+                'en' => ['title' => '', 'slug' => '', 'meta' => ['meta_title' => '', 'meta_description' => '', 'og_image' => '']],
+            ])
+            ->call('save')
+            ->assertHasNoErrors();
+
+        Livewire::actingAs($this->user)
+            ->test(Create::class)
+            ->set('status', 'draft')
+            ->set('translations', [
+                'id' => ['title' => 'Halaman Kedua', 'slug' => 'halaman-kedua', 'meta' => ['meta_title' => '', 'meta_description' => '', 'og_image' => '']],
+                'en' => ['title' => '', 'slug' => '', 'meta' => ['meta_title' => '', 'meta_description' => '', 'og_image' => '']],
+            ])
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertSame(2, Page::count());
+        $this->assertDatabaseMissing('page_translations', ['locale' => 'en']);
+    }
+
     public function test_extra_locale_title_requires_slug(): void
     {
         Livewire::actingAs($this->user)

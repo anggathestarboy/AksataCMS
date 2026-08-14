@@ -163,11 +163,20 @@ abstract class PageForm extends Component
     protected function syncTranslations(Page $page): void
     {
         foreach ($this->translations as $locale => $values) {
+            $title = trim((string) ($values['title'] ?? ''));
+            $slug = trim((string) ($values['slug'] ?? ''));
+
+            if (blank($title) || blank($slug)) {
+                $page->translations()->where('locale', $locale)->delete();
+
+                continue;
+            }
+
             $page->translations()->updateOrCreate(
                 ['locale' => $locale],
                 [
-                    'title' => $values['title'] ?? '',
-                    'slug' => $values['slug'] ?? '',
+                    'title' => $title,
+                    'slug' => $slug,
                     'meta' => array_replace($this->defaultMeta(), $values['meta'] ?? []),
                 ],
             );
