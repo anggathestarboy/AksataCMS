@@ -1,3 +1,5 @@
+@php $errorBag = $this->getErrorBag(); @endphp
+
 <div class="py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-6">
@@ -16,15 +18,32 @@
             </div>
         @endif
 
+        @if ($errorBag->isNotEmpty())
+            <div class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3">
+                <h4 class="text-sm font-medium text-red-800">Please fix the following before saving:</h4>
+                <ul class="mt-1 list-disc list-inside text-sm text-red-700">
+                    @foreach ($errorBag->all() as $message)
+                        <li>{{ $message }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
             <div class="p-6" x-data="{ tab: @js(array_key_first(config('cms.locales'))) }">
                 <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-6" aria-label="Tabs">
                         @foreach (config('cms.locales') as $locale => $label)
+                            @php
+                                $hasTabErrors = collect($errorBag->keys())->contains(fn (string $key): bool => str_starts_with($key, 'content.' . $locale . '.'));
+                            @endphp
                             <button type="button" @click="tab = @js($locale)"
                                 :class="tab === @js($locale) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                                 class="inline-flex items-center px-1 py-2 border-b-2 text-sm font-medium">
                                 {{ $label }}
+                                @if ($hasTabErrors)
+                                    <span class="ms-1 inline-block h-2 w-2 rounded-full bg-red-500"></span>
+                                @endif
                             </button>
                         @endforeach
                     </nav>

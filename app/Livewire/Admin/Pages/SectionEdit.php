@@ -128,10 +128,8 @@ class SectionEdit extends Component
     {
         $errors = [];
 
-        foreach (config('cms.locales') as $locale => $label) {
-            foreach ($this->fields as $field) {
-                $this->assertRequired($locale, $field, [], $errors);
-            }
+        foreach ($this->fields as $field) {
+            $this->assertRequired(config('cms.default_locale'), $field, [], $errors);
         }
 
         if (count($errors)) {
@@ -147,6 +145,10 @@ class SectionEdit extends Component
     {
         $statePath = implode('.', array_merge([$locale], $pathSegments, [$field['key']]));
         $value = data_get($this->content, $statePath);
+
+        if (($field['type'] ?? 'text') === 'image' && blank($value)) {
+            $value = data_get($this->uploads, $statePath);
+        }
 
         if (($field['required'] ?? false) && blank($value)) {
             $errors["content.{$statePath}"] = "The {$field['label']} field is required in the {$locale} locale.";

@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\SectionTypes;
 
 use App\Models\SectionType;
+use App\Services\SectionTemplateGenerator;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -32,6 +33,8 @@ class Edit extends SectionTypeForm
             ],
         ]), $this->validationMessages());
 
+        $oldSlug = $this->sectionType->slug;
+
         $this->sectionType->update([
             'name' => $validated['name'],
             'slug' => $validated['slug'],
@@ -39,9 +42,18 @@ class Edit extends SectionTypeForm
             'fields' => $this->normalizeFields(),
         ]);
 
+        app(SectionTemplateGenerator::class)->rename($this->sectionType, $oldSlug);
+
         session()->flash('status', 'Section type updated successfully.');
 
         return redirect()->route('admin.section-types.edit', $this->sectionType);
+    }
+
+    public function regenerateTemplate(): void
+    {
+        app(SectionTemplateGenerator::class)->generate($this->sectionType, force: true);
+
+        session()->flash('template_status', 'The template file has been regenerated with the default markup.');
     }
 
     public function delete()

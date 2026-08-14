@@ -6,5 +6,11 @@
         </div>
 
         @include('livewire.admin.section-types.partials.form')
+
+        <p class="mt-4 text-sm text-gray-500">
+            Setelah disimpan, file template Blade akan dibuat otomatis di
+            <code class="font-mono text-xs text-gray-700">resources/views/public/sections/{{ $this->slug }}.blade.php</code>
+            untuk dikustomisasi.
+        </p>
     </div>
 </div>

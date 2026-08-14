@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\SectionTypes;
 
 use App\Models\SectionType;
+use App\Services\SectionTemplateGenerator;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -15,12 +16,14 @@ class Create extends SectionTypeForm
             'slug' => ['required', 'string', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'unique:section_types,slug'],
         ]), $this->validationMessages());
 
-        SectionType::create([
+        $sectionType = SectionType::create([
             'name' => $validated['name'],
             'slug' => $validated['slug'],
             'icon' => $validated['icon'],
             'fields' => $this->normalizeFields(),
         ]);
+
+        app(SectionTemplateGenerator::class)->generate($sectionType);
 
         session()->flash('status', 'Section type created successfully.');
 

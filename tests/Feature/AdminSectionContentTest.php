@@ -9,6 +9,7 @@ use App\Models\Section;
 use App\Models\SectionType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -89,14 +90,28 @@ class AdminSectionContentTest extends TestCase
         $this->assertSame('Welcome', $section->translations()->where('locale', 'en')->firstOrFail()->content['heading']);
     }
 
-    public function test_required_fields_are_validated_per_locale(): void
+    public function test_required_fields_are_validated_in_the_default_locale_only(): void
     {
         $section = $this->createSection();
 
         Livewire::actingAs($this->user)
             ->test(SectionEdit::class, ['page' => $this->page, 'section' => $section])
             ->call('save')
-            ->assertHasErrors(['content.id.heading', 'content.en.heading']);
+            ->assertHasErrors('content.id.heading')
+            ->assertHasNoErrors('content.en.heading');
+    }
+
+    public function test_can_save_with_only_the_default_locale_filled(): void
+    {
+        $section = $this->createSection();
+
+        Livewire::actingAs($this->user)
+            ->test(SectionEdit::class, ['page' => $this->page, 'section' => $section])
+            ->set('content.id.heading', 'Selamat Datang')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertSame('Selamat Datang', $section->translations()->where('locale', 'id')->firstOrFail()->content['heading']);
     }
 
     public function test_can_save_rich_text_content(): void
@@ -125,6 +140,38 @@ class AdminSectionContentTest extends TestCase
         $this->assertSame('<h2>Title</h2><p>Body.</p>', $section->translations()->where('locale', 'en')->firstOrFail()->content['content']);
     }
 
+    public function test_required_image_field_is_validated_against_the_upload(): void
+    {
+        $sectionType = SectionType::create([
+            'name' => 'Card',
+            'slug' => 'card',
+            'icon' => 'image',
+            'fields' => [
+                ['key' => 'card_img', 'label' => 'Card Img', 'type' => 'image', 'required' => true],
+            ],
+        ]);
+
+        $section = $this->page->sections()->create(['section_type_id' => $sectionType->id, 'order' => 1]);
+        $section->translations()->create(['locale' => 'id', 'content' => []]);
+        $section->translations()->create(['locale' => 'en', 'content' => []]);
+
+        Livewire::actingAs($this->user)
+            ->test(SectionEdit::class, ['page' => $this->page, 'section' => $section])
+            ->call('save')
+            ->assertHasErrors('content.id.card_img');
+
+        Livewire::actingAs($this->user)
+            ->test(SectionEdit::class, ['page' => $this->page, 'section' => $section])
+            ->set('uploads.id.card_img', UploadedFile::fake()->image('card.jpg'))
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertStringStartsWith(
+            'sections/',
+            $section->translations()->where('locale', 'id')->firstOrFail()->content['card_img'],
+        );
+    }
+
     public function test_required_field_inside_repeater_is_validated(): void
     {
         $sectionType = SectionType::create([
@@ -147,6 +194,33 @@ class AdminSectionContentTest extends TestCase
             ->call('addRepeaterItem', 'id', 'items')
             ->call('save')
             ->assertHasErrors('content.id.items.0.title');
+    }
+
+    public function test_repeater_buttons_target_locale_relative_paths_in_the_rendered_form(): void
+    {
+        $sectionType = SectionType::create([
+            'name' => 'Features',
+            'slug' => 'features',
+            'icon' => 'list',
+            'fields' => [
+                ['key' => 'items', 'label' => 'Items', 'type' => 'repeater', 'required' => false, 'fields' => [
+                    ['key' => 'title', 'label' => 'Title', 'type' => 'text', 'required' => false],
+                ]],
+            ],
+        ]);
+
+        $section = $this->page->sections()->create(['section_type_id' => $sectionType->id, 'order' => 1]);
+        $section->translations()->create(['locale' => 'id', 'content' => []]);
+        $section->translations()->create(['locale' => 'en', 'content' => []]);
+
+        $html = Livewire::actingAs($this->user)
+            ->test(SectionEdit::class, ['page' => $this->page, 'section' => $section])
+            ->html();
+
+        $this->assertStringNotContainsString("addRepeaterItem('id', 'id.items')", $html);
+        $this->assertStringContainsString("addRepeaterItem('id', 'items')", $html);
+        $this->assertStringNotContainsString("addRepeaterItem('en', 'en.items')", $html);
+        $this->assertStringContainsString("addRepeaterItem('en', 'items')", $html);
     }
 
     public function test_repeater_items_can_be_added_moved_removed_and_saved(): void

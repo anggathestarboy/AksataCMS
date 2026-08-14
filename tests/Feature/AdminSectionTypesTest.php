@@ -7,7 +7,9 @@ use App\Livewire\Admin\SectionTypes\Edit;
 use App\Livewire\Admin\SectionTypes\Index;
 use App\Models\SectionType;
 use App\Models\User;
+use App\Services\SectionTemplateGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -15,11 +17,33 @@ class AdminSectionTypesTest extends TestCase
 {
     use RefreshDatabase;
 
+    private array $createdTemplates = [];
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->user = User::factory()->create();
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->createdTemplates as $path) {
+            if (File::exists($path)) {
+                File::delete($path);
+            }
+        }
+
+        parent::tearDown();
+    }
+
+    private function templatePath(string $slug): string
+    {
+        $path = app(SectionTemplateGenerator::class)->path($slug);
+
+        $this->createdTemplates[] = $path;
+
+        return $path;
     }
 
     public function test_can_create_section_type_with_nested_repeater_fields(): void
@@ -39,6 +63,8 @@ class AdminSectionTypesTest extends TestCase
             ->call('save')
             ->assertHasNoErrors()
             ->assertRedirect(route('admin.section-types.index'));
+
+        $this->templatePath('hero-banner');
 
         $this->assertDatabaseHas('section_types', ['slug' => 'hero-banner']);
 
@@ -71,6 +97,8 @@ class AdminSectionTypesTest extends TestCase
             ->call('save')
             ->assertHasNoErrors()
             ->assertRedirect(route('admin.section-types.index'));
+
+        $this->templatePath('article');
 
         $this->assertSame('rich-text', SectionType::where('slug', 'article')->firstOrFail()->fields[0]['type']);
     }
@@ -108,6 +136,8 @@ class AdminSectionTypesTest extends TestCase
             ->call('save')
             ->assertHasNoErrors()
             ->assertRedirect(route('admin.section-types.edit', $sectionType));
+
+        $this->templatePath('hero-banner');
 
         $fresh = $sectionType->fresh();
 
@@ -161,6 +191,8 @@ class AdminSectionTypesTest extends TestCase
             ->set('fields.0.type', 'text')
             ->call('save')
             ->assertHasNoErrors();
+
+        $this->templatePath('hero');
 
         $sectionType = SectionType::where('slug', 'hero')->firstOrFail();
 
@@ -253,5 +285,132 @@ class AdminSectionTypesTest extends TestCase
 
         $this->assertDatabaseMissing('section_types', ['id' => $alpha->id]);
         $this->assertDatabaseHas('section_types', ['id' => $beta->id]);
+    }
+
+    public function test_creating_section_type_generates_a_blade_template_file(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(Create::class)
+            ->set('name', 'Hero Banner')
+            ->set('slug', 'hero-banner')
+            ->set('icon', 'sparkles')
+            ->set('fields', [
+                ['key' => 'heading', 'label' => 'Heading', 'type' => 'text', 'required' => true],
+            ])
+            ->call('save')
+            ->assertHasNoErrors()
+            ->assertRedirect(route('admin.section-types.index'));
+
+        $path = $this->templatePath('hero-banner');
+
+        $this->assertFileExists($path);
+        $this->assertStringContainsString('Template Section: Hero Banner (hero-banner)', File::get($path));
+        $this->assertStringContainsString("{{ \$content['heading'] ?? '' }}", File::get($path));
+    }
+
+    public function test_renaming_section_type_slug_renames_the_template_file(): void
+    {
+        $sectionType = SectionType::create([
+            'name' => 'Hero',
+            'slug' => 'hero-banner',
+            'icon' => 'image',
+            'fields' => [
+                ['key' => 'heading', 'label' => 'Heading', 'type' => 'text', 'required' => false],
+            ],
+        ]);
+
+        $oldPath = $this->templatePath('hero-banner');
+        $newPath = $this->templatePath('hero-banner-2');
+
+        File::ensureDirectoryExists(dirname($oldPath));
+        File::put($oldPath, 'CUSTOM OLD MARKER');
+
+        Livewire::actingAs($this->user)
+            ->test(Edit::class, ['sectionType' => $sectionType])
+            ->set('slug', 'hero-banner-2')
+            ->call('save')
+            ->assertHasNoErrors()
+            ->assertRedirect(route('admin.section-types.edit', $sectionType));
+
+        $this->assertFileDoesNotExist($oldPath);
+        $this->assertFileExists($newPath);
+        $this->assertStringContainsString('CUSTOM OLD MARKER', File::get($newPath));
+    }
+
+    public function test_editing_without_slug_change_preserves_customized_template(): void
+    {
+        $sectionType = SectionType::create([
+            'name' => 'Hero',
+            'slug' => 'hero',
+            'icon' => 'image',
+            'fields' => [
+                ['key' => 'heading', 'label' => 'Heading', 'type' => 'text', 'required' => false],
+            ],
+        ]);
+
+        $path = $this->templatePath('hero');
+
+        File::ensureDirectoryExists(dirname($path));
+        File::put($path, 'CUSTOM MARKER');
+
+        Livewire::actingAs($this->user)
+            ->test(Edit::class, ['sectionType' => $sectionType])
+            ->set('name', 'Hero Renamed')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertStringContainsString('CUSTOM MARKER', File::get($path));
+    }
+
+    public function test_regenerate_template_overwrites_customizations(): void
+    {
+        $sectionType = SectionType::create([
+            'name' => 'Hero',
+            'slug' => 'hero',
+            'icon' => 'image',
+            'fields' => [
+                ['key' => 'heading', 'label' => 'Heading', 'type' => 'text', 'required' => false],
+            ],
+        ]);
+
+        $path = $this->templatePath('hero');
+
+        File::ensureDirectoryExists(dirname($path));
+        File::put($path, 'CUSTOM MARKER');
+
+        Livewire::actingAs($this->user)
+            ->test(Edit::class, ['sectionType' => $sectionType])
+            ->call('regenerateTemplate')
+            ->assertHasNoErrors();
+
+        $content = File::get($path);
+
+        $this->assertStringNotContainsString('CUSTOM MARKER', $content);
+        $this->assertStringContainsString('Template Section: Hero (hero)', $content);
+    }
+
+    public function test_deleting_section_type_removes_the_template_file(): void
+    {
+        $sectionType = SectionType::create([
+            'name' => 'Hero',
+            'slug' => 'hero',
+            'icon' => 'image',
+            'fields' => [
+                ['key' => 'heading', 'label' => 'Heading', 'type' => 'text', 'required' => false],
+            ],
+        ]);
+
+        $generator = app(SectionTemplateGenerator::class);
+        $generator->generate($sectionType);
+        $path = $generator->path('hero');
+        $this->createdTemplates[] = $path;
+        $this->assertFileExists($path);
+
+        Livewire::actingAs($this->user)
+            ->test(Index::class)
+            ->call('delete', $sectionType->id)
+            ->assertHasNoErrors();
+
+        $this->assertFileDoesNotExist($path);
     }
 }

@@ -1,6 +1,7 @@
 @foreach ($fields as $field)
     @php
         $fieldPath = $path . '.' . $field['key'];
+        $repeaterPath = str_starts_with($fieldPath, $locale . '.') ? substr($fieldPath, strlen($locale) + 1) : $fieldPath;
         $value = data_get($content, $fieldPath, '');
         $isRepeater = ($field['type'] ?? 'text') === 'repeater';
     @endphp
@@ -38,11 +39,11 @@
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-medium text-gray-500">Item #{{ $index + 1 }}</span>
                             <div class="flex gap-1">
-                                <button type="button" wire:click="moveRepeaterItem(@js($locale), @js($path . '.' . $field['key']), {{ $index }}, 'up')" title="Move up"
+                                <button type="button" wire:click="moveRepeaterItem(@js($locale), @js($repeaterPath), {{ $index }}, 'up')" title="Move up"
                                     class="inline-flex items-center justify-center p-1.5 rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100">↑</button>
-                                <button type="button" wire:click="moveRepeaterItem(@js($locale), @js($path . '.' . $field['key']), {{ $index }}, 'down')" title="Move down"
+                                <button type="button" wire:click="moveRepeaterItem(@js($locale), @js($repeaterPath), {{ $index }}, 'down')" title="Move down"
                                     class="inline-flex items-center justify-center p-1.5 rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100">↓</button>
-                                <button type="button" wire:click="removeRepeaterItem(@js($locale), @js($path . '.' . $field['key']), {{ $index }})" title="Remove"
+                                <button type="button" wire:click="removeRepeaterItem(@js($locale), @js($repeaterPath), {{ $index }})" title="Remove"
                                     class="inline-flex items-center justify-center p-1.5 rounded-md bg-red-600 text-white hover:bg-red-500">✕</button>
                             </div>
                         </div>
@@ -55,7 +56,7 @@
                     </div>
                 @endforeach
 
-                <button type="button" wire:click="addRepeaterItem(@js($locale), @js($path . '.' . $field['key']))"
+                <button type="button" wire:click="addRepeaterItem(@js($locale), @js($repeaterPath))"
                     class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md text-xs font-semibold text-gray-700 uppercase tracking-wider shadow-sm hover:bg-gray-50">
                     + Add Item
                 </button>

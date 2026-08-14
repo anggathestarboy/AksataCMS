@@ -7,6 +7,7 @@ use App\Models\Section;
 use App\Models\SectionType;
 use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -15,6 +16,8 @@ class PublicPageTest extends TestCase
     use RefreshDatabase;
 
     private SectionType $sectionType;
+
+    private array $createdTemplates = [];
 
     protected function setUp(): void
     {
@@ -34,6 +37,26 @@ class PublicPageTest extends TestCase
                 ]],
             ],
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->createdTemplates as $path) {
+            if (File::exists($path)) {
+                File::delete($path);
+            }
+        }
+
+        parent::tearDown();
+    }
+
+    private function writeCustomTemplate(string $markup): void
+    {
+        $path = resource_path('views/public/sections/hero.blade.php');
+
+        $this->createdTemplates[] = $path;
+        File::ensureDirectoryExists(dirname($path));
+        File::put($path, $markup);
     }
 
     private function makePage(string $status = 'published', string $idSlug = 'tentang-kami', string $enSlug = 'about-us'): Page
@@ -86,6 +109,17 @@ class PublicPageTest extends TestCase
             ->assertOk()
             ->assertSee('About Us')
             ->assertSee('Welcome')
+            ->assertDontSee('Selamat Datang');
+    }
+
+    public function test_section_with_empty_locale_content_renders_blank(): void
+    {
+        $page = $this->makePage();
+        $this->attachSection($page, ['heading' => 'Selamat Datang'], []);
+
+        $this->get('/en/about-us')
+            ->assertOk()
+            ->assertSee('About Us')
             ->assertDontSee('Selamat Datang');
     }
 
@@ -195,6 +229,33 @@ class PublicPageTest extends TestCase
             ->assertSee('Tentang Kami SEO')
             ->assertSee('Situs Saya')
             ->assertSee('Hak cipta 2026');
+    }
+
+    public function test_custom_template_controls_section_rendering(): void
+    {
+        $this->writeCustomTemplate('<div class="custom-hero">{{ $content["heading"] ?? "" }}</div>');
+
+        $page = $this->makePage();
+        $this->attachSection($page, ['heading' => 'Selamat Datang']);
+
+        $this->get('/id/tentang-kami')
+            ->assertOk()
+            ->assertSee('custom-hero', false)
+            ->assertSee('Selamat Datang');
+    }
+
+    public function test_custom_template_renders_blank_when_locale_content_is_empty(): void
+    {
+        $this->writeCustomTemplate('<div class="custom-hero">{{ $content["heading"] ?? "" }}</div>');
+
+        $page = $this->makePage();
+        $this->attachSection($page, ['heading' => 'Selamat Datang'], []);
+
+        $this->get('/en/about-us')
+            ->assertOk()
+            ->assertSee('About Us')
+            ->assertDontSee('custom-hero', false)
+            ->assertDontSee('Selamat Datang');
     }
 
     public function test_home_page_slug_still_redirects_when_home_slug_fallback(): void
