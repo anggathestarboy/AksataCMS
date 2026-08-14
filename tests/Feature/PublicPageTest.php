@@ -112,6 +112,16 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Selamat Datang');
     }
 
+    public function test_page_without_sections_hides_title_and_empty_message(): void
+    {
+        $page = $this->makePage();
+
+        $this->get('/id/tentang-kami')
+            ->assertOk()
+            ->assertDontSee('<h1', false)
+            ->assertDontSee('This page has no sections yet.');
+    }
+
     public function test_section_with_empty_locale_content_renders_blank(): void
     {
         $page = $this->makePage();
