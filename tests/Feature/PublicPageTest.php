@@ -112,6 +112,17 @@ class PublicPageTest extends TestCase
             ->assertDontSee('Selamat Datang');
     }
 
+    public function test_page_title_is_not_rendered_when_sections_exist(): void
+    {
+        $page = $this->makePage();
+        $this->attachSection($page, ['heading' => 'Selamat Datang']);
+
+        $this->get('/id/tentang-kami')
+            ->assertOk()
+            ->assertDontSee('<h1', false)
+            ->assertSee('Selamat Datang');
+    }
+
     public function test_page_without_sections_hides_title_and_empty_message(): void
     {
         $page = $this->makePage();

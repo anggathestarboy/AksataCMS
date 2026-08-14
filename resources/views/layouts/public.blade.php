@@ -37,21 +37,32 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Tailwind CDN Fallback (Opsional untuk memastikan class Tailwind SELALU jalan) -->
+        <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+        <style>[x-cloak] { display: none !important; }</style>
+
+        <!-- Alpine.js untuk interaksi publik (dropdown, accordion, dll.) -->
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.9/dist/cdn.min.js"></script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-50 flex flex-col">
-            <header class="bg-white shadow-sm">
+    <body class="font-sans antialiased bg-gray-50 text-gray-900 overflow-x-hidden">
+        <div class="min-h-screen flex flex-col">
+            
+            {{-- HEADER --}}
+            <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                    <a href="{{ url('/') }}" class="text-lg font-bold text-gray-900">
+                    <a href="{{ url('/') }}" class="text-xl font-bold tracking-tight text-gray-900">
                         {{ $siteTitle }}
                     </a>
 
-                    <nav class="flex items-center gap-4 text-sm">
+                    <nav class="flex items-center gap-6 text-sm font-medium">
                         @if ($page->translationFor(config('cms.default_locale')) !== null)
                             <a href="{{ url('/') }}"
-                                class="text-gray-500 hover:text-gray-900 {{ $locale === config('cms.default_locale') ? 'font-semibold text-gray-900' : '' }}">
+                                class="transition-colors hover:text-indigo-600 {{ $locale === config('cms.default_locale') ? 'font-semibold text-indigo-600' : 'text-gray-600' }}">
                                 Home
                             </a>
                         @endif
@@ -60,7 +71,7 @@
                             @php $target = $page->translationFor($localeKey); @endphp
                             @if ($target !== null)
                                 <a href="/{{ $localeKey }}/{{ $target->slug }}"
-                                    class="{{ $localeKey === $locale ? 'font-semibold text-indigo-600' : 'text-gray-500 hover:text-gray-900' }}">
+                                    class="transition-colors {{ $localeKey === $locale ? 'font-semibold text-indigo-600' : 'text-gray-500 hover:text-gray-900' }}">
                                     {{ $label }}
                                 </a>
                             @endif
@@ -69,13 +80,15 @@
                 </div>
             </header>
 
-            <main class="flex-1">
+            {{-- MAIN CONTENT --}}
+          <main class="flex-1 w-full p-0 m-0">
                 @yield('content')
             </main>
 
+            {{-- FOOTER --}}
             @if ($siteFooter !== '')
-                <footer class="bg-white border-t border-gray-200 mt-8">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-sm text-gray-500">
+                <footer class="bg-white border-t border-gray-200 mt-auto">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-sm text-gray-500 text-center">
                         {!! $siteFooter !!}
                     </div>
                 </footer>
