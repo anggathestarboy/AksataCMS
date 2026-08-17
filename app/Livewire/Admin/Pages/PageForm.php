@@ -23,6 +23,8 @@ abstract class PageForm extends Component
 
     public ?Page $page = null;
 
+    public string $activeLocale = 'id';
+
     /**
      * @return array<string, string>
      */
@@ -54,6 +56,18 @@ abstract class PageForm extends Component
     public function updatedStatus(string $value): void
     {
         $this->resetValidation('publishedAt');
+    }
+
+    public function togglePublish(): void
+    {
+        $this->status = $this->status === 'published' ? 'draft' : 'published';
+
+        if ($this->page !== null) {
+            $this->page->update([
+                'status' => $this->status,
+                'published_at' => $this->resolvePublishedAt(),
+            ]);
+        }
     }
 
     public function updated(string $name, mixed $value): void
@@ -166,19 +180,27 @@ abstract class PageForm extends Component
             $title = trim((string) ($values['title'] ?? ''));
             $slug = trim((string) ($values['slug'] ?? ''));
 
-            if (blank($title) || blank($slug)) {
-                $page->translations()->where('locale', $locale)->delete();
+            $payload = [
+                'title' => $title,
+                'slug' => $slug,
+                'meta' => array_replace($this->defaultMeta(), $values['meta'] ?? []),
+            ];
+
+            if (blank($title) && blank($slug)) {
+                $existing = $page->translations()->where('locale', $locale)->first();
+
+                if ($existing) {
+                    $existing->update(['meta' => $payload['meta']]);
+
+                    continue;
+                }
 
                 continue;
             }
 
             $page->translations()->updateOrCreate(
                 ['locale' => $locale],
-                [
-                    'title' => $title,
-                    'slug' => $slug,
-                    'meta' => array_replace($this->defaultMeta(), $values['meta'] ?? []),
-                ],
+                $payload,
             );
         }
     }

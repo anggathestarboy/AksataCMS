@@ -32,7 +32,7 @@ class Create extends PageForm
             return $page;
         });
 
-        session()->flash('status', 'Page created successfully.');
+        $this->dispatch('show-toast', message: 'Page created successfully.');
 
         return redirect()->route('admin.pages.edit', $page);
     }
