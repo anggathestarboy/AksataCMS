@@ -38,8 +38,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Tailwind CDN Fallback (Opsional untuk memastikan class Tailwind SELALU jalan) -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+ 
 
     <style>
         [x-cloak] {
@@ -68,15 +67,17 @@
                 <nav class="flex items-center gap-6 text-sm font-medium">
                     <x-navigation :slug="'navbar'" :locale="$locale" />
 
-                    @foreach (config('cms.locales') as $localeKey => $label)
-                        @php $target = $page->translationFor($localeKey); @endphp
-                        @if ($target !== null)
-                            <a href="/{{ $localeKey }}/{{ $target->slug }}"
-                                class="transition-colors {{ $localeKey === $locale ? 'font-semibold text-indigo-600' : 'text-gray-500 hover:text-gray-900' }}">
-                                {{ $label }}
-                            </a>
-                        @endif
-                    @endforeach
+                    <div class="flex items-center rounded border border-gray-300 overflow-hidden text-xs font-semibold">
+                        @foreach (config('cms.locales') as $localeKey => $label)
+                            @php $target = $page->translationFor($localeKey); @endphp
+                            @if ($target !== null)
+                                <a href="/{{ $localeKey }}/{{ $target->slug }}"
+                                    class="px-3 py-1 transition-colors {{ $localeKey === $locale ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+                                    {{ strtoupper($localeKey) }}
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
                 </nav>
             </div>
         </header>

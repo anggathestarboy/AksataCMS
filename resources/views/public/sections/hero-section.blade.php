@@ -19,14 +19,12 @@
     }
 @endphp
 
-<section class="relative left-1/2 w-screen -translate-x-1/2 min-h-[500px] lg:min-h-[600px] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden rounded-xl shadow-lg {{ $bgUrl ? '' : 'bg-gray-900' }}"
+<section class="relative w-full bg-cover bg-center bg-no-repeat overflow-hidden {{ $bgUrl ? '' : 'bg-gray-900' }}"
          @if($bgUrl) style="background-image: url('{{ $bgUrl }}');" @endif>
-    
-    {{-- Dark Overlay untuk keterbacaan teks --}}
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
 
-    {{-- Hero Content Container --}}
-    <div class="relative z-10 container mx-auto px-6 py-16 text-center max-w-4xl">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36 text-left">
         @foreach ($fields as $field)
             @php
                 $key = $field['key'];
@@ -56,7 +54,7 @@
 
             @elseif ($type === 'rich-text')
                 @if (! blank($value))
-                    <div class="prose prose-invert max-w-none my-4 text-gray-200 leading-relaxed">
+                    <div class="prose prose-invert max-w-none my-4 text-gray-100 leading-relaxed">
                         {!! $value !!}
                     </div>
                 @endif
@@ -68,15 +66,16 @@
                             {{ $value }}
                         </h1>
                     @elseif (str_contains($key, 'subtitle') || str_contains($key, 'subheading'))
-                        <h2 class="text-lg sm:text-2xl font-medium text-gray-200 my-3">
+                        <h2 class="text-lg sm:text-2xl font-medium text-gray-100 my-3">
                             {{ $value }}
                         </h2>
                     @elseif ($type === 'textarea')
-                        <p class="my-3 text-base sm:text-lg text-gray-300 whitespace-pre-line leading-relaxed max-w-2xl mx-auto">
+                        {{-- Dihapus mx-auto agar rata kiri penuh --}}
+                        <p class="my-3 text-base sm:text-lg text-gray-100 whitespace-pre-line leading-relaxed max-w-2xl">
                             {{ $value }}
                         </p>
                     @else
-                        <p class="my-2 text-base text-gray-300">
+                        <p class="my-2 text-base text-gray-100">
                             {{ $value }}
                         </p>
                     @endif
