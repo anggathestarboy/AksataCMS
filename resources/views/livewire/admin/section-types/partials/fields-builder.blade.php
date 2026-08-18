@@ -27,6 +27,7 @@
                     <option value="rich-text">Rich Text</option>
                     <option value="image">Image</option>
                     <option value="repeater">Repeater</option>
+                    <option value="link">Link</option>
                 </select>
             </div>
             <div class="col-span-4 sm:col-span-1">

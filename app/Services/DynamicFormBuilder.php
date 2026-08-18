@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 class DynamicFormBuilder
 {
-    public const TYPES = ['text', 'textarea', 'rich-text', 'image', 'repeater'];
+    public const TYPES = ['text', 'textarea', 'rich-text', 'image', 'repeater', 'link'];
 
     /**
      * Normalize a SectionType fields definition into a plain, render-safe structure.

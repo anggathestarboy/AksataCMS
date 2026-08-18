@@ -47,6 +47,68 @@
             @error($uploadPrefix . $fieldPath)
                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
             @enderror
+        @elseif (($field['type'] ?? 'text') === 'link')
+            @php
+                $linkValue = data_get($inlineMode ? ($sectionContent[$sectionId] ?? []) : ($content ?? []), $fieldPath, []);
+                if (! is_array($linkValue)) {
+                    $linkValue = [];
+                }
+                $linkType = $linkValue['link_type'] ?? 'internal';
+            @endphp
+
+            <div x-data="{ linkType: @js($linkType) }">
+                {{-- Link label --}}
+                <div>
+                    <label class="block text-xs font-medium text-gray-600">Link Label</label>
+                    <input type="text" wire:model="{{ $wirePrefix }}{{ $fieldPath }}.label"
+                        placeholder="Link text"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+
+                {{-- Link type --}}
+                <div class="mt-3">
+                    <label class="block text-xs font-medium text-gray-600">Target Type</label>
+                    <select wire:model.live="{{ $wirePrefix }}{{ $fieldPath }}.link_type"
+                        x-model="linkType"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="internal">Internal Link</option>
+                        <option value="external">External Link</option>
+                        <option value="page">Page</option>
+                    </select>
+                </div>
+
+                {{-- URL (external / internal) --}}
+                <div class="mt-3" x-show="linkType !== 'page'">
+                    <label class="block text-xs font-medium text-gray-600">
+                        <span x-text="linkType === 'external' ? 'External URL' : 'Internal Path'"></span>
+                    </label>
+                    <input type="text" wire:model="{{ $wirePrefix }}{{ $fieldPath }}.url"
+                        :placeholder="linkType === 'external' ? 'https://example.com/...' : '/kontak'"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+
+                {{-- Page selector --}}
+                <div class="mt-3" x-show="linkType === 'page'">
+                    <label class="block text-xs font-medium text-gray-600">Page</label>
+                    <select wire:model="{{ $wirePrefix }}{{ $fieldPath }}.page_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="">Select a page...</option>
+                        @foreach ($pages as $p)
+                            <option value="{{ $p->id }}">
+                                {{ $p->translation(config('cms.default_locale'))?->title ?? '(untitled #' . $p->id . ')' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Open in new tab --}}
+                <label class="mt-3 inline-flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                    <input type="checkbox" wire:model="{{ $wirePrefix }}{{ $fieldPath }}.open_in_new_tab"
+                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    Open in new tab
+                </label>
+            </div>
+
         @elseif ($isRepeater)
             <div class="mt-2 space-y-3">
                 @foreach ((array) data_get($inlineMode ? ($sectionContent[$sectionId] ?? []) : ($content ?? []), $fieldPath, []) as $index => $item)
@@ -94,8 +156,10 @@
                 @endif
             </div>
         @else
-            <input type="text" wire:model="{{ $wirePrefix }}{{ $fieldPath }}"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            @if (! is_array($value))
+                <input type="text" wire:model="{{ $wirePrefix }}{{ $fieldPath }}"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            @endif
         @endif
 
         @if (! $isRepeater)

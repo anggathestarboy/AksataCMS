@@ -105,18 +105,11 @@ class SectionTemplateGenerator
                 <div class="grid gap-4 sm:grid-cols-2">
                     @foreach ((array) $value as $item)
                         <div class="rounded-lg border border-gray-200 p-4">
-                            @foreach (($field['fields'] ?? []) as $subField)
-                                @php $subValue = data_get($item, $subField['key']); @endphp
-                                @if (! blank($subValue))
-                                    @if (str_contains($subField['key'], 'heading') || str_contains($subField['key'], 'title'))
-                                        <h3 class="mt-2 mb-1 text-lg font-semibold text-gray-800">{{ $subValue }}</h3>
-                                    @elseif (($subField['type'] ?? 'text') === 'textarea')
-                                        <p class="text-gray-700 whitespace-pre-line">{{ $subValue }}</p>
-                                    @else
-                                        <p class="text-gray-700">{{ $subValue }}</p>
-                                    @endif
-                                @endif
-                            @endforeach
+                            @include('public.partials.dynamic-fields', [
+                                'fields' => $field['fields'] ?? [],
+                                'content' => (array) $item,
+                                'path' => '',
+                            ])
                         </div>
                     @endforeach
                 </div>
@@ -126,7 +119,7 @@ class SectionTemplateGenerator
                 <div class="prose prose-slate max-w-none my-3">{!! $value !!}</div>
             @endif
         @else
-            @if (! blank($value))
+            @if (! blank($value) && ! is_array($value))
                 @if (str_contains($key, 'heading') || str_contains($key, 'title'))
                     <h2 class="mt-6 mb-3 text-2xl font-bold text-gray-900">{{ $value }}</h2>
                 @elseif (str_contains($key, 'subtitle') || str_contains($key, 'subheading'))

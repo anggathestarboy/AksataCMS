@@ -106,13 +106,24 @@ class SectionEdit extends Component
 
     protected function defaultFor(array $field): mixed
     {
-        return ($field['type'] ?? 'text') === 'repeater' ? [] : '';
+        return match ($field['type'] ?? 'text') {
+            'repeater' => [],
+            'link' => [
+                'label' => '',
+                'link_type' => 'internal',
+                'url' => '',
+                'page_id' => null,
+                'open_in_new_tab' => false,
+            ],
+            default => '',
+        };
     }
 
     public function save(): void
     {
         $this->validateContent();
         $this->storeUploads();
+        $this->syncLinkFields();
 
         foreach ($this->content as $locale => $content) {
             $this->section->translations()->updateOrCreate(
@@ -154,6 +165,17 @@ class SectionEdit extends Component
             $errors["content.{$statePath}"] = "The {$field['label']} field is required in the {$locale} locale.";
         }
 
+        if (($field['type'] ?? 'text') === 'link' && $value !== null) {
+            $linkData = (array) $value;
+            $linkType = $linkData['link_type'] ?? '';
+            $hasUrl = filled($linkData['url'] ?? '');
+            $hasPage = filled($linkData['page_id'] ?? null);
+
+            if (($field['required'] ?? false) && ($linkType === '' || (! $hasUrl && ! $hasPage))) {
+                $errors["content.{$statePath}"] = "The {$field['label']} link is required in the {$locale} locale.";
+            }
+        }
+
         if (($field['type'] ?? 'text') === 'repeater') {
             $items = (array) data_get($this->content, $statePath, []);
 
@@ -169,6 +191,42 @@ class SectionEdit extends Component
     {
         $this->walkUploads($this->uploads, $this->content);
         $this->uploads = [];
+    }
+
+    private function syncLinkFields(): void
+    {
+        $defaultLocale = config('cms.default_locale');
+
+        foreach ($this->fields as $field) {
+            if (($field['type'] ?? 'text') !== 'link') {
+                continue;
+            }
+
+            $defaultContent = $this->content[$defaultLocale] ?? [];
+            $defaultLink = (array) data_get($defaultContent, $field['key'], []);
+
+            if (empty($defaultLink)) {
+                continue;
+            }
+
+            $syncData = [
+                'link_type' => $defaultLink['link_type'] ?? 'internal',
+                'url' => $defaultLink['url'] ?? '',
+                'page_id' => $defaultLink['page_id'] ?? null,
+                'open_in_new_tab' => $defaultLink['open_in_new_tab'] ?? false,
+            ];
+
+            foreach (array_keys(config('cms.locales')) as $locale) {
+                if ($locale === $defaultLocale) {
+                    continue;
+                }
+
+                $otherContent = $this->content[$locale] ?? [];
+                $otherLink = (array) data_get($otherContent, $field['key'], []);
+
+                data_set($this->content, "{$locale}.{$field['key']}", array_merge($otherLink, $syncData));
+            }
+        }
     }
 
     /**
@@ -194,6 +252,7 @@ class SectionEdit extends Component
     {
         return view('livewire.admin.pages.section-edit', [
             'sectionType' => $this->section->sectionType,
+            'pages' => Page::query()->with('translations')->orderBy('order')->get(),
         ]);
     }
 }

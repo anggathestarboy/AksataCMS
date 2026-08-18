@@ -44,18 +44,11 @@
                     <div class="mt-8 grid gap-4 sm:grid-cols-2 text-left">
                         @foreach ((array) $value as $item)
                             <div class="rounded-xl border border-white/20 bg-white/10 backdrop-blur-md p-5 text-white shadow-sm">
-                                @foreach (($field['fields'] ?? []) as $subField)
-                                    @php $subValue = data_get($item, $subField['key']); @endphp
-                                    @if (! blank($subValue))
-                                        @if (str_contains($subField['key'], 'heading') || str_contains($subField['key'], 'title'))
-                                            <h3 class="mt-1 mb-1 text-lg font-semibold text-white">{{ $subValue }}</h3>
-                                        @elseif (($subField['type'] ?? 'text') === 'textarea')
-                                            <p class="text-gray-200 text-sm whitespace-pre-line">{{ $subValue }}</p>
-                                        @else
-                                            <p class="text-gray-200 text-sm">{{ $subValue }}</p>
-                                        @endif
-                                    @endif
-                                @endforeach
+                                @include('public.partials.dynamic-fields', [
+                                    'fields' => $field['fields'] ?? [],
+                                    'content' => (array) $item,
+                                    'path' => '',
+                                ])
                             </div>
                         @endforeach
                     </div>
@@ -69,7 +62,7 @@
                 @endif
 
             @else
-                @if (! blank($value))
+                @if (! blank($value) && ! is_array($value))
                     @if (str_contains($key, 'heading') || str_contains($key, 'title'))
                         <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight my-3">
                             {{ $value }}

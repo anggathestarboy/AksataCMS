@@ -119,6 +119,8 @@ class Edit extends PageForm
 
     private function saveAllSectionContent(): void
     {
+        $this->syncLinkFields();
+
         foreach ($this->page->sections()->get() as $section) {
             $sectionId = $section->id;
 
@@ -153,6 +155,17 @@ class Edit extends PageForm
             $errors["sectionContent.{$sectionId}.{$statePath}"] = "The {$field['label']} field is required in the {$locale} locale.";
         }
 
+        if (($field['type'] ?? 'text') === 'link' && $value !== null) {
+            $linkData = (array) $value;
+            $linkType = $linkData['link_type'] ?? '';
+            $hasUrl = filled($linkData['url'] ?? '');
+            $hasPage = filled($linkData['page_id'] ?? null);
+
+            if (($field['required'] ?? false) && ($linkType === '' || (! $hasUrl && ! $hasPage))) {
+                $errors["sectionContent.{$sectionId}.{$statePath}"] = "The {$field['label']} link is required in the {$locale} locale.";
+            }
+        }
+
         if (($field['type'] ?? 'text') === 'repeater') {
             $items = (array) data_get($this->sectionContent[$sectionId] ?? [], $statePath, []);
 
@@ -179,6 +192,45 @@ class Edit extends PageForm
                 }
 
                 $this->walkSectionUploads($value, $content[$key], $sectionId);
+            }
+        }
+    }
+
+    private function syncLinkFields(): void
+    {
+        foreach ($this->page->sections()->with('sectionType')->get() as $section) {
+            $sectionId = $section->id;
+            $fields = $section->sectionType->fields ?? [];
+            $activeContent = $this->sectionContent[$sectionId][$this->activeLocale] ?? [];
+
+            foreach ($fields as $field) {
+                if (($field['type'] ?? 'text') !== 'link') {
+                    continue;
+                }
+
+                $activeLink = (array) data_get($activeContent, $field['key'], []);
+
+                if (empty($activeLink)) {
+                    continue;
+                }
+
+                $syncData = [
+                    'link_type' => $activeLink['link_type'] ?? 'internal',
+                    'url' => $activeLink['url'] ?? '',
+                    'page_id' => $activeLink['page_id'] ?? null,
+                    'open_in_new_tab' => $activeLink['open_in_new_tab'] ?? false,
+                ];
+
+                foreach (array_keys(config('cms.locales')) as $locale) {
+                    if ($locale === $this->activeLocale) {
+                        continue;
+                    }
+
+                    $otherContent = $this->sectionContent[$sectionId][$locale] ?? [];
+                    $otherLink = (array) data_get($otherContent, $field['key'], []);
+
+                    data_set($this->sectionContent[$sectionId], "{$locale}.{$field['key']}", array_merge($otherLink, $syncData));
+                }
             }
         }
     }
@@ -244,7 +296,17 @@ class Edit extends PageForm
 
     protected function defaultFieldValue(array $field): mixed
     {
-        return ($field['type'] ?? 'text') === 'repeater' ? [] : '';
+        return match ($field['type'] ?? 'text') {
+            'repeater' => [],
+            'link' => [
+                'label' => '',
+                'link_type' => 'internal',
+                'url' => '',
+                'page_id' => null,
+                'open_in_new_tab' => false,
+            ],
+            default => '',
+        };
     }
 
     public function delete()
@@ -324,6 +386,7 @@ class Edit extends PageForm
         return view('livewire.admin.pages.edit', [
             'sections' => $this->page->sections()->with('sectionType')->get(),
             'sectionTypes' => SectionType::query()->orderBy('name')->get(),
+            'pages' => Page::query()->with('translations')->orderBy('order')->get(),
         ]);
     }
 }
