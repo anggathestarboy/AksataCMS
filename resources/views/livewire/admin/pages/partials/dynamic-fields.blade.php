@@ -34,7 +34,7 @@
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
         @elseif (($field['type'] ?? 'text') === 'rich-text')
             <textarea wire:model="{{ $wirePrefix }}{{ $fieldPath }}" rows="6"
-                placeholder="Supports basic HTML (h2, p, strong, a, ul, ...)"
+                placeholder="enter your desc"
                 class="mt-1 block w-full font-mono text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
             <p class="mt-1 text-[10px] text-gray-400">You can paste formatted HTML content here.</p>
         @elseif (($field['type'] ?? 'text') === 'image')

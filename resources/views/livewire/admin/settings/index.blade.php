@@ -38,7 +38,7 @@
                 <div>
                     <label for="siteFooter" class="block text-sm font-medium text-gray-700">Site Footer</label>
                     <textarea id="siteFooter" wire:model="siteFooter" rows="4"
-                        placeholder="Supports basic HTML (e.g. &lt;p&gt;© 2026 My Site&lt;/p&gt;)"
+                        placeholder="Enter your desc"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
                     @error('siteFooter')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

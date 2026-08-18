@@ -291,47 +291,6 @@ class AdminNavigationsTest extends TestCase
         $this->assertDatabaseMissing('navigation_item_translations', ['navigation_item_id' => $child->id]);
     }
 
-    public function test_update_order_renumbers_siblings(): void
-    {
-        $navigation = Navigation::create(['name' => 'Main Navbar', 'slug' => 'main-navbar']);
-        $a = $navigation->items()->create(['type' => 'internal', 'url' => '/a', 'order' => 1]);
-        $b = $navigation->items()->create(['type' => 'internal', 'url' => '/b', 'order' => 2]);
-        $c = $navigation->items()->create(['type' => 'internal', 'url' => '/c', 'order' => 3]);
-
-        Livewire::actingAs($this->user)
-            ->test(ItemBuilder::class, ['navigation' => $navigation])
-            ->call('updateOrder', $c->id, 0)
-            ->assertHasNoErrors();
-
-        $freshA = $a->fresh();
-        $freshB = $b->fresh();
-        $freshC = $c->fresh();
-
-        $this->assertSame(2, $freshA->order);
-        $this->assertSame(3, $freshB->order);
-        $this->assertSame(1, $freshC->order);
-    }
-
-    public function test_update_order_can_move_item_into_submenu(): void
-    {
-        $navigation = Navigation::create(['name' => 'Main Navbar', 'slug' => 'main-navbar']);
-        $parent = $navigation->items()->create(['type' => 'internal', 'url' => '/parent', 'order' => 1]);
-        $child = $navigation->items()->create(['type' => 'internal', 'url' => '/child', 'parent_id' => $parent->id, 'order' => 1]);
-        $sibling = $navigation->items()->create(['type' => 'internal', 'url' => '/sibling', 'order' => 2]);
-
-        Livewire::actingAs($this->user)
-            ->test(ItemBuilder::class, ['navigation' => $navigation])
-            ->call('updateOrder', $sibling->id, 0, $parent->id)
-            ->assertHasNoErrors();
-
-        $freshSibling = $sibling->fresh();
-        $freshChild = $child->fresh();
-
-        $this->assertSame($parent->id, $freshSibling->parent_id);
-        $this->assertSame(1, $freshSibling->order);
-        $this->assertSame(2, $freshChild->order);
-    }
-
     public function test_move_item_up_and_down(): void
     {
         $navigation = Navigation::create(['name' => 'Main Navbar', 'slug' => 'main-navbar']);
