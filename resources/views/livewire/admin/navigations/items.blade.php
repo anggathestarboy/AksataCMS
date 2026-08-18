@@ -35,15 +35,14 @@
                         <p class="text-sm text-gray-500">No menu items yet. Click "Add Item" to create the first one.</p>
                     </div>
                 @else
-                    <div x-sort x-sort:group="nav-items" x-sort:config="{ animation: 150 }"
-                        x-sort="(item, position) => $wire.updateOrder(item, position, null)"
+                    <div wire:key="item-tree-{{ $navigation->items->count() }}-{{ $navigation->items->max('updated_at') }}"
                         class="space-y-2">
                         @foreach ($items as $item)
                             @include('livewire.admin.navigations.partials.item-row', ['item' => $item, 'depth' => 0])
                         @endforeach
                     </div>
                     <p class="mt-3 text-xs text-gray-400">
-                        Drag items by the grip handle to reorder, or drop an item onto a submenu list to nest it.
+                        Use the arrows to reorder items.
                     </p>
                 @endif
             </div>

@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Navigations;
 use App\Models\Navigation;
 use App\Models\NavigationItem;
 use App\Models\Page;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -30,8 +29,6 @@ class ItemBuilder extends Component
     public bool $openInNewTab = false;
 
     public ?int $pageId = null;
-
-    public string $icon = '';
 
     /**
      * @var array<string, string>
@@ -62,7 +59,6 @@ class ItemBuilder extends Component
         $this->url = '';
         $this->openInNewTab = false;
         $this->pageId = null;
-        $this->icon = '';
         $this->labels = $this->defaultLabels();
         $this->resetValidation();
         $this->showForm = true;
@@ -78,7 +74,6 @@ class ItemBuilder extends Component
         $this->url = (string) $item->url;
         $this->openInNewTab = (bool) $item->open_in_new_tab;
         $this->pageId = $item->page_id;
-        $this->icon = (string) $item->icon;
         $this->labels = $this->defaultLabels();
 
         foreach ($item->translations as $translation) {
@@ -113,7 +108,6 @@ class ItemBuilder extends Component
             'type' => $this->type,
             'url' => in_array($this->type, ['external', 'internal'], true) ? trim($this->url) : null,
             'page_id' => $this->type === 'page' ? $this->pageId : null,
-            'icon' => trim($this->icon) ?: null,
             'open_in_new_tab' => $this->openInNewTab,
         ];
 
@@ -188,33 +182,6 @@ class ItemBuilder extends Component
         $other->update(['order' => $itemOrder]);
     }
 
-    public function updateOrder(int $itemId, int $position, ?int $parentId = null): void
-    {
-        $item = NavigationItem::query()
-            ->where('navigation_id', $this->navigation->getKey())
-            ->findOrFail($itemId);
-
-        $position = max(0, (int) $position);
-
-        $siblings = NavigationItem::query()
-            ->where('navigation_id', $this->navigation->getKey())
-            ->where('parent_id', $parentId)
-            ->whereKeyNot($itemId)
-            ->orderBy('order')
-            ->get();
-
-        DB::transaction(function () use ($item, $siblings, $parentId, $position): void {
-            $item->update([
-                'parent_id' => $parentId,
-                'order' => $position + 1,
-            ]);
-
-            foreach ($siblings->values() as $index => $sibling) {
-                $sibling->update(['order' => $index < $position ? $index + 1 : $index + 2]);
-            }
-        });
-    }
-
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -224,7 +191,6 @@ class ItemBuilder extends Component
             'type' => ['required', 'string', Rule::in(['external', 'internal', 'page'])],
             'url' => ['nullable', 'required_if:type,external', 'required_if:type,internal', 'string', 'max:2048'],
             'pageId' => ['nullable', 'required_if:type,page', 'exists:pages,id'],
-            'icon' => ['nullable', 'string', 'max:255'],
             'openInNewTab' => ['boolean'],
         ];
 

@@ -1,15 +1,8 @@
 @props(['item', 'depth' => 0])
 
-<div x-sort:item="{{ $item->id }}" data-item-id="{{ $item->id }}"
+<div data-item-id="{{ $item->id }}"
     class="group rounded-lg border border-gray-200 bg-white shadow-sm">
     <div class="flex items-center gap-2 px-3 py-2.5">
-        {{-- Drag handle --}}
-        <span x-sort:handle title="Drag to reorder" class="cursor-grab text-gray-400 hover:text-gray-600 shrink-0">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M7 2a2 2 0 11.001 4.001A2 2 0 017 2zm0 6a2 2 0 11.001 4.001A2 2 0 017 8zm0 6a2 2 0 11.001 4.001A2 2 0 017 14zm6-8a2 2 0 10-.001-4.001A2 2 0 0013 6zm0 2a2 2 0 01.001 4.001A2 2 0 0113 8zm0 6a2 2 0 01.001 4.001A2 2 0 0113 14z"/>
-            </svg>
-        </span>
-
         {{-- Move arrows --}}
         <div class="flex flex-col -space-y-0.5 shrink-0">
             <button type="button" wire:click="moveItem({{ $item->id }}, 'up')" title="Move up"
@@ -35,10 +28,6 @@
         @if ($item->open_in_new_tab)
             <span title="Opens in new tab" class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600">↗</span>
         @endif
-        @if ($item->icon)
-            <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600">{{ $item->icon }}</span>
-        @endif
-
         {{-- Actions --}}
         <div class="shrink-0 flex items-center gap-1">
             <button type="button" wire:click="openCreate({{ $item->id }})" title="Add submenu item"
@@ -56,11 +45,9 @@
         </div>
     </div>
 
-    {{-- Submenu (sortable container, same group for nesting) --}}
+    {{-- Submenu --}}
     @if ($item->children->isNotEmpty())
-        <div x-sort x-sort:group="nav-items" x-sort:config="{ animation: 150 }"
-            x-sort="(item, position) => $wire.updateOrder(item, position, {{ $item->id }})"
-            class="px-3 pb-2.5 pt-1 pl-8 space-y-2">
+        <div class="px-3 pb-2.5 pt-1 pl-8 space-y-2">
             @foreach ($item->children as $child)
                 @include('livewire.admin.navigations.partials.item-row', ['item' => $child, 'depth' => $depth + 1])
             @endforeach

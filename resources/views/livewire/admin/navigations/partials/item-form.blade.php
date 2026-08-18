@@ -65,16 +65,6 @@
                 @enderror
             </div>
 
-            {{-- Icon --}}
-            <div class="mt-4">
-                <label class="block text-xs font-medium text-gray-500">Icon (optional)</label>
-                <input type="text" wire:model="icon" placeholder="e.g. home, star"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                @error('icon')
-                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
             {{-- Label (locale tabs) --}}
             <div class="mt-4">
                 <label class="block text-xs font-medium text-gray-500 mb-2">Label</label>
@@ -86,7 +76,7 @@
                         </button>
                     @endforeach
                 </div>
-                <div class="mt-2">
+                <div class="mt-2" wire:key="label-{{ $activeLocale }}">
                     <input type="text" wire:model.live="labels.{{ $activeLocale }}"
                         placeholder="Label in {{ config('cms.locales')[$activeLocale] ?? $activeLocale }}"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">

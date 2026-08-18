@@ -14,10 +14,16 @@ class NavigationItem extends Model
         'type',
         'url',
         'page_id',
-        'icon',
         'open_in_new_tab',
         'order',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(fn (NavigationItem $item): bool => $item->navigation?->touch() ?? false);
+        static::updated(fn (NavigationItem $item): bool => $item->navigation?->touch() ?? false);
+        static::deleted(fn (NavigationItem $item): bool => $item->navigation?->touch() ?? false);
+    }
 
     public function navigation(): BelongsTo
     {
