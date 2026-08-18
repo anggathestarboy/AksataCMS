@@ -9,12 +9,21 @@
         <div class="px-4 py-4">
             <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700">Status</span>
-                <button type="button" wire:click="togglePublish"
-                    class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-inner"
-                    :class="$wire.status === 'published' ? 'bg-indigo-600' : 'bg-gray-300'">
-                    <span class="pointer-events-none inline-block h-6 w-6 rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out transform"
-                        :class="$wire.status === 'published' ? 'translate-x-5' : 'translate-x-0'"></span>
-                </button>
+                <div class="flex items-center gap-3">
+                    @if ($page->status === 'published' && $page->url() !== null)
+                        <a href="{{ $page->url() }}" target="_blank" rel="noopener"
+                            class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full hover:bg-emerald-100 transition">
+                            View Live
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    @endif
+                    <button type="button" wire:click="togglePublish"
+                        class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-inner"
+                        :class="$wire.status === 'published' ? 'bg-indigo-600' : 'bg-gray-300'">
+                        <span class="pointer-events-none inline-block h-6 w-6 rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out transform"
+                            :class="$wire.status === 'published' ? 'translate-x-5' : 'translate-x-0'"></span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

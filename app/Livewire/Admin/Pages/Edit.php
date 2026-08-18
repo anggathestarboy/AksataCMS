@@ -381,6 +381,31 @@ class Edit extends PageForm
         }
     }
 
+    public function copyFromDefault(): void
+    {
+        $default = config('cms.default_locale');
+
+        foreach ($this->sectionContent as $sectionId => $locales) {
+            $source = $locales[$default] ?? [];
+            foreach (array_keys(config('cms.locales')) as $locale) {
+                if ($locale !== $default) {
+                    $this->sectionContent[$sectionId][$locale] = $source;
+                }
+            }
+        }
+
+        $defaultTranslation = $this->translations[$default] ?? [];
+        foreach (array_keys(config('cms.locales')) as $locale) {
+            if ($locale !== $default) {
+                $this->translations[$locale] = $defaultTranslation;
+            }
+        }
+
+        $this->dispatch('show-toast', message: 'Content copied from '
+            . (config('cms.locales')[$default] ?? $default)
+            . ' to all other languages.');
+    }
+
     public function render()
     {
         return view('livewire.admin.pages.edit', [
