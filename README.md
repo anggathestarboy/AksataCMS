@@ -110,11 +110,21 @@ If the project includes database seeders, run:
 php artisan db:seed
 ```
 
-Or run migrations and seeders together:
+Default User
 
-```bash
-php artisan migrate --seed
-```
+After running the database seeder:
+
+php artisan db:seed
+
+A default user will be created and can be used to access the CMS:
+
+Field	Value
+Email	anggara@gmail.com
+Password	aksata2003
+
+Use these credentials to log in to the application after the seeding process has completed successfully.
+
+Security Notice: For production environments, it is strongly recommended to change the default password immediately after the first login.
 
 ## Frontend Installation
 
