@@ -1,4 +1,8 @@
+import sort from '@alpinejs/sort'
+
 const Alpine = window.Alpine
+
+Alpine.plugin(sort)
 
 window.data = (name, definition) => Alpine.data(name, definition)
 window.store = (name, value) => Alpine.store(name, value)

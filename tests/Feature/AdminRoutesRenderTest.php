@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Navigation;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\SectionType;
@@ -27,6 +28,7 @@ class AdminRoutesRenderTest extends TestCase
         $sectionType = SectionType::create(['name' => 'Hero', 'slug' => 'hero', 'icon' => 'image', 'fields' => []]);
         $page = Page::create(['status' => 'draft', 'published_at' => null, 'order' => 1]);
         $section = Section::create(['page_id' => $page->id, 'section_type_id' => $sectionType->id, 'order' => 1]);
+        $navigation = Navigation::create(['name' => 'Main Navbar', 'slug' => 'main-navbar']);
 
         $routes = [
             route('admin.section-types.index'),
@@ -36,6 +38,10 @@ class AdminRoutesRenderTest extends TestCase
             route('admin.pages.create'),
             route('admin.pages.edit', $page),
             route('admin.pages.sections.edit', [$page, $section]),
+            route('admin.navigations.index'),
+            route('admin.navigations.create'),
+            route('admin.navigations.edit', $navigation),
+            route('admin.navigations.items', $navigation),
         ];
 
         foreach ($routes as $url) {

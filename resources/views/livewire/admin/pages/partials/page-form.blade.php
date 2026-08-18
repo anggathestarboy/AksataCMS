@@ -35,7 +35,7 @@
     </div>
 
     {{-- Title / Slug / Meta (driven by activeLocale) --}}
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+    <div wire:key="content-{{ $activeLocale }}" class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <div class="px-4 py-3 border-b border-gray-50">
             <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Content
@@ -65,7 +65,7 @@
 
             <div>
                 <label class="block text-xs font-medium text-gray-500">Meta Title</label>
-                <input type="text" wire:model="translations.{{ $activeLocale }}.meta.meta_title"
+                <input type="text" wire:model.live="translations.{{ $activeLocale }}.meta.meta_title"
                     placeholder="Falls back to title"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 @error('translations.' . $activeLocale . '.meta.meta_title')
@@ -75,7 +75,7 @@
 
             <div>
                 <label class="block text-xs font-medium text-gray-500">Meta Description</label>
-                <textarea rows="2" wire:model="translations.{{ $activeLocale }}.meta.meta_description"
+                <textarea rows="2" wire:model.live="translations.{{ $activeLocale }}.meta.meta_description"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-xs"></textarea>
                 @error('translations.' . $activeLocale . '.meta.meta_description')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
@@ -84,7 +84,7 @@
 
             <div>
                 <label class="block text-xs font-medium text-gray-500">OG Image URL</label>
-                <input type="text" wire:model="translations.{{ $activeLocale }}.meta.og_image"
+                <input type="text" wire:model.live="translations.{{ $activeLocale }}.meta.og_image"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 @error('translations.' . $activeLocale . '.meta.og_image')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>

@@ -76,7 +76,7 @@ abstract class PageForm extends Component
             return;
         }
 
-        $slugPath = $matches[1] . '.slug';
+        $slugPath = $matches[1].'.slug';
 
         if (blank(data_get($this->translations, $slugPath))) {
             data_set($this->translations, $slugPath, Str::slug((string) $value));
@@ -98,8 +98,8 @@ abstract class PageForm extends Component
                 $rules["translations.{$locale}.title"] = ['required', 'string', 'max:255'];
                 $rules["translations.{$locale}.slug"] = ['required', 'string', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'];
             } else {
-                $rules["translations.{$locale}.title"] = ['nullable', 'string', 'max:255', 'required_with:translations.' . $locale . '.slug'];
-                $rules["translations.{$locale}.slug"] = ['nullable', 'string', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'required_with:translations.' . $locale . '.title'];
+                $rules["translations.{$locale}.title"] = ['nullable', 'string', 'max:255', 'required_with:translations.'.$locale.'.slug'];
+                $rules["translations.{$locale}.slug"] = ['nullable', 'string', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'required_with:translations.'.$locale.'.title'];
             }
 
             $rules["translations.{$locale}.meta.meta_title"] = ['nullable', 'string', 'max:255'];
@@ -174,9 +174,13 @@ abstract class PageForm extends Component
         return filled($this->publishedAt) ? Carbon::parse($this->publishedAt) : null;
     }
 
-    protected function syncTranslations(Page $page): void
+    protected function syncTranslations(Page $page, ?string $onlyLocale = null): void
     {
-        foreach ($this->translations as $locale => $values) {
+        $locales = $onlyLocale
+            ? [$onlyLocale => $this->translations[$onlyLocale] ?? []]
+            : $this->translations;
+
+        foreach ($locales as $locale => $values) {
             $title = trim((string) ($values['title'] ?? ''));
             $slug = trim((string) ($values['slug'] ?? ''));
 

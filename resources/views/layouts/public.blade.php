@@ -66,12 +66,7 @@
                 </a>
 
                 <nav class="flex items-center gap-6 text-sm font-medium">
-                    @if ($page->translationFor(config('cms.default_locale')) !== null)
-                        <a href="{{ url('/') }}"
-                            class="transition-colors hover:text-indigo-600 {{ $locale === config('cms.default_locale') ? 'font-semibold text-indigo-600' : 'text-gray-600' }}">
-                            Home
-                        </a>
-                    @endif
+                    <x-navigation :slug="'navbar'" :locale="$locale" />
 
                     @foreach (config('cms.locales') as $localeKey => $label)
                         @php $target = $page->translationFor($localeKey); @endphp

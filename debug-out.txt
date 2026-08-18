@@ -1,0 +1,58 @@
+﻿PHPUnit Started (PHPUnit 12.5.33 using PHP 8.4.23 (cli) on WINNT)
+Test Runner Configured
+Bootstrap Finished (C:\laragon\www\ContentBlock\vendor/autoload.php)
+Event Facade Sealed
+Test Suite Loaded (124 tests)
+Test Runner Started
+Test Suite Sorted
+Test Suite Filtered (1 test)
+Test Runner Execution Started (1 test)
+Test Suite Started (C:\laragon\www\ContentBlock\phpunit.xml, 1 test)
+Test Suite Started (Feature, 1 test)
+Test Suite Started (Tests\Feature\ScratchNavigationDebugTest, 1 test)
+Test Preparation Started (Tests\Feature\ScratchNavigationDebugTest::test_debug_missing_slug)
+Before Test Method Called (Tests\Feature\ScratchNavigationDebugTest::setUp)
+Before Test Method Finished:
+- Tests\Feature\ScratchNavigationDebugTest::setUp
+Test Prepared (Tests\Feature\ScratchNavigationDebugTest::test_debug_missing_slug)
+"EXCEPTION: Illuminate\View\ViewException: Attempt to read property "items" on null (View: C:\laragon\www\ContentBlock\resources\views\components\navigation.blade.php) (View: C:\laragon\www\ContentBlock\resources\views\components\navigation.blade.php)" // tests\Feature\ScratchNavigationDebugTest.php:22
+"""
+#0 C:\laragon\www\ContentBlock\vendor\livewire\livewire\src\Mechanisms\ExtendBlade\ExtendedCompilerEngine.php(58): Illuminate\View\Engines\CompilerEngine->handleViewException(Object(Illuminate\View\ViewException), 1)\n
+#1 C:\laragon\www\ContentBlock\vendor\laravel\framework\src\Illuminate\View\Engines\PhpEngine.php(59): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->handleViewException(Object(Illuminate\View\ViewException), 1)\n
+#2 C:\laragon\www\ContentBlock\vendor\livewire\livewire\src\Mechanisms\ExtendBlade\ExtendedCompilerEngine.php(22): Illuminate\View\Engines\PhpEngine->evaluatePath('C:\\laragon\\www\\..', Array)\n
+#3 C:\laragon\www\ContentBlock\vendor\laravel\framework\src\Illuminate\View\Engines\CompilerEngine.php(76): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->evaluatePath('C:\\laragon\\www\\..', Array)\n
+#4 C:\laragon\www\ContentBlock\vendor\livewire\livewire\src\Mechanisms\ExtendBlade\ExtendedCompilerEngine.php(10): Illuminate\View\Engines\CompilerEngine->get('C:\\Users\\angga\\..', Array)\n
+#5 C:\laragon\www\ContentBlock\vendor\laravel\framework\src\Illuminate\View\View.php(208): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->get('C:\\Users\\angga\\..', Array)\n
+#6 C:\laragon\www\ContentBlock\vendor\laravel\framework\src\Illuminate\View\View.php(191): Illuminate\View\View->getContents()\n
+#7 C:\laragon\www\ContentBlock\vendor\laravel\framework\src\Illuminate\View\View.php(160): Illuminate\View\View->renderContents()\n
+#8 C:\laragon\www\ContentBlock\vendor\laravel\framework\src\Illuminate\Testing\TestView.php(42): Illuminate\View\View->render()\n
+#9 C:\laragon\www\ContentBlock\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithViews.php(47): Illuminate\Testing\TestView->__construct(Object(Illuminate\View\View))\n
+#10 C:\laragon\www\ContentBlock\tests\Feature\ScratchNavigationDebugTest.php(16): Illuminate\Foundation\Testing\TestCase->blade('<x-navigation :..', Array)\n
+#11 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestCase.php(1318): Tests\Feature\ScratchNavigationDebugTest->test_debug_missing_slug()\n
+#12 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('test_debug_miss..', Array)\n
+#13 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestCase.php(521): PHPUnit\Framework\TestCase->runTest()\n
+#14 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()\n
+#15 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(Tests\Feature\ScratchNavigationDebugTest))\n
+#16 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestSuite.php(374): PHPUnit\Framework\TestCase->run()\n
+#17 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestSuite.php(374): PHPUnit\Framework\TestSuite->run()\n
+#18 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\Framework\TestSuite.php(374): PHPUnit\Framework\TestSuite->run()\n
+#19 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite->run()\n
+#20 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\src\TextUI\Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))\n
+#21 C:\laragon\www\ContentBlock\vendor\phpunit\phpunit\phpunit(104): PHPUnit\TextUI\Application->run(Array)\n
+#22 {main}
+""" // tests\Feature\ScratchNavigationDebugTest.php:23
+After Test Method Called (Tests\Feature\ScratchNavigationDebugTest::tearDown)
+After Test Method Finished:
+- Tests\Feature\ScratchNavigationDebugTest::tearDown
+Test Passed (Tests\Feature\ScratchNavigationDebugTest::test_debug_missing_slug)
+Test Finished (Tests\Feature\ScratchNavigationDebugTest::test_debug_missing_slug)
+After Last Test Method Called (Tests\Feature\ScratchNavigationDebugTest::tearDownAfterClass)
+After Last Test Method Finished:
+- Tests\Feature\ScratchNavigationDebugTest::tearDownAfterClass
+Test Suite Finished (Tests\Feature\ScratchNavigationDebugTest, 1 test)
+Test Suite Finished (Feature, 1 test)
+Test Suite Finished (C:\laragon\www\ContentBlock\phpunit.xml, 1 test)
+Test Runner Execution Finished
+Test Runner Finished
+PHPUnit Finished (Shell Exit Code: 0)
+{"tool":"phpunit","result":"passed","tests":1,"passed":1,"assertions":1,"duration_ms":1385}

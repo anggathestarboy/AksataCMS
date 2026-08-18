@@ -61,6 +61,12 @@
                                 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />',
                             ],
                             [
+                                'label' => __('Navigations'),
+                                'route' => 'admin.navigations.index',
+                                'active' => request()->routeIs('admin.navigations.*'),
+                                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />',
+                            ],
+                            [
                                 'label' => __('Settings'),
                                 'route' => 'admin.settings.index',
                                 'active' => request()->routeIs('admin.settings.*'),
@@ -98,6 +104,7 @@
                     $currentPageLabel = match (true) {
                         request()->routeIs('admin.pages.*') => __('Pages'),
                         request()->routeIs('admin.section-types.*') => __('Section Types'),
+                        request()->routeIs('admin.navigations.*') => __('Navigations'),
                         request()->routeIs('admin.settings.*') => __('Settings'),
                         request()->routeIs('profile.show') => __('Profile'),
                         request()->routeIs('api-tokens.*') => __('API Tokens'),
