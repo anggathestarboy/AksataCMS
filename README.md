@@ -110,21 +110,26 @@ If the project includes database seeders, run:
 php artisan db:seed
 ```
 
-Default User
+After running the database seeder, a default user will be created.
 
-After running the database seeder:
+### Default User
 
-php artisan db:seed
+The following credentials can be used to log in to the CMS:
 
-A default user will be created and can be used to access the CMS:
+| Field    | Value               |
+| -------- | ------------------- |
+| Email    | `anggara@gmail.com` |
+| Password | `aksata2003`        |
 
-Field	Value
-Email	anggara@gmail.com
-Password	aksata2003
+Use these credentials to access the application after the seeding process has completed successfully.
 
-Use these credentials to log in to the application after the seeding process has completed successfully.
+**Security Notice:** For production environments, it is strongly recommended to change the default password immediately after the first login.
 
-Security Notice: For production environments, it is strongly recommended to change the default password immediately after the first login.
+Alternatively, migrations and seeders can be executed together:
+
+```bash
+php artisan migrate --seed
+```
 
 ## Frontend Installation
 
@@ -260,4 +265,4 @@ Additional directories and components may be added as the CMS continues to evolv
 
 ## Contribution
 
-Contributions to Content Blog Page are welcome. When contributing, create a separate branch for your changes and ensure that the implementation follows the existing project structure and coding standards..
+Contributions to Content Blog Page are welcome. When contributing, create a separate branch for your changes and ensure that the implementation follows the existing project structure and coding standards.
