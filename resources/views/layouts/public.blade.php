@@ -58,14 +58,15 @@
     <div class="min-h-screen flex flex-col">
 
         {{-- HEADER --}}
-        <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                 <a href="{{ url('/') }}" class="text-xl font-bold tracking-tight text-gray-900">
                     {{ $siteTitle }}
                 </a>
 
-                <nav class="flex items-center gap-6 text-sm font-medium">
-                    <x-navigation :slug="'navbar'" :locale="$locale" />
+                {{-- Desktop Nav --}}
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-medium">
+                    <x-navigation :slug="'navbar'" :locale="$locale" class="flex items-center gap-6" />
 
                     <div class="flex items-center rounded border border-gray-300 overflow-hidden text-xs font-semibold">
                         @foreach (config('cms.locales') as $localeKey => $label)
@@ -79,6 +80,35 @@
                         @endforeach
                     </div>
                 </nav>
+
+                {{-- Mobile Hamburger --}}
+                <button @click="mobileOpen = !mobileOpen" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none" :aria-expanded="mobileOpen">
+                    <svg x-show="!mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg x-show="mobileOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Mobile Menu --}}
+            <div x-show="mobileOpen" x-collapse x-cloak class="lg:hidden border-t border-gray-200 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 space-y-3">
+                    <x-navigation :slug="'navbar'" :locale="$locale" class="flex flex-col items-start gap-3" />
+
+                    <div class="flex items-center rounded border border-gray-300 overflow-hidden text-xs font-semibold w-fit">
+                        @foreach (config('cms.locales') as $localeKey => $label)
+                            @php $target = $page->translationFor($localeKey); @endphp
+                            @if ($target !== null)
+                                <a href="/{{ $localeKey }}/{{ $target->slug }}"
+                                    class="px-3 py-1 transition-colors {{ $localeKey === $locale ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+                                    {{ strtoupper($localeKey) }}
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </header>
 

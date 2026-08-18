@@ -12,8 +12,8 @@
     $heading = blank($heading) ? 'Dropdown Title' : $heading;
 @endphp
 
-<section class="py-12 bg-white">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="w-full ">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div x-data="{ open: false }" class="mt-8">
             {{-- Dropdown Trigger (mirip header accordion) --}}
             <div class="border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 shadow-sm"
