@@ -15,7 +15,8 @@
         {{ $content['heading'] ?? '' }}
     =========================================================
 --}}
-<section class="bg-white rounded-lg shadow-sm p-6 sm:p-8">
+<section class="w-full bg-white py-12 sm:py-16 lg:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     @foreach ($fields as $field)
         @php
             $key = $field['key'];
@@ -34,9 +35,9 @@
             @endif
         @elseif ($type === 'repeater')
             @if (! blank($value))
-                <div class="grid gap-4 sm:grid-cols-2">
+                <div class="grid py-8 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ((array) $value as $item)
-                        <div class="rounded-lg border border-gray-200 p-4">
+                        <div class="rounded-lg border border-gray-500 p-4">
                             @include('public.partials.dynamic-fields', [
                                 'fields' => $field['fields'] ?? [],
                                 'content' => (array) $item,
@@ -64,4 +65,5 @@
             @endif
         @endif
     @endforeach
+    </div>
 </section>

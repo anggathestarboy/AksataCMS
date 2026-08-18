@@ -28,12 +28,14 @@
             'fields' => $fields,
         ])
     @else
-        <section class="bg-white rounded-lg shadow-sm p-6 sm:p-8">
-            @include('public.partials.dynamic-fields', [
-                'fields' => $fields,
-                'content' => $content,
-                'path' => '',
-            ])
+        <section class="w-full bg-white py-12 sm:py-16 lg:py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                @include('public.partials.dynamic-fields', [
+                    'fields' => $fields,
+                    'content' => $content,
+                    'path' => '',
+                ])
+            </div>
         </section>
     @endif
 @endif
