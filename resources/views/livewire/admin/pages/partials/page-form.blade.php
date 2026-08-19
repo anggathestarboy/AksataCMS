@@ -10,7 +10,7 @@
             <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700">Status</span>
                 <div class="flex items-center gap-3">
-                    @if ($page->status === 'published' && $page->url() !== null)
+                    @if ($page && $page->status === 'published' && $page->url() !== null)
                         <a href="{{ $page->url() }}" target="_blank" rel="noopener"
                             class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full hover:bg-emerald-100 transition">
                             View Live

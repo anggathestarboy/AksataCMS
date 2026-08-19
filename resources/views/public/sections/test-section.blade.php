@@ -8,12 +8,17 @@
     =========================================================
 --}}
 <section>
-        @field('test-heading')
-    @field('test-desc')
-    @field('test-image')
+        @field('test-heading')<br>
+    @field('test-desc')<br>
+   <img src="@field('test-image')" alt=""> <br>
+
+   <br>
     @foreach (($content['test-loop'] ?? []) as $item)
+    <br>
         @field('loop-heading', $item)
         @field('loop-desc', $item)
     @endforeach
-    @field('test-link')
+
+    <br>
+    <a href="@field('test-link')" target="@field('test-link_target')">@field('test-link_label')</a>
 </section>
