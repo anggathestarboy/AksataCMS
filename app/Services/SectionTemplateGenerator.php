@@ -96,16 +96,20 @@ BLADE;
 
             if ($type === 'link') {
                 $lines[] = "{$indent}<a href=\"@field('{$key}')\" target=\"@field('{$key}_target')\">@field('{$key}_label')</a>";
+            } elseif ($type === 'image') {
+                $lines[] = "{$indent}<img\n{$indent}    src=\"@field('{$key}')\"\n{$indent}    alt=\"-\"\n{$indent}    title=\"-\"\n{$indent}    width=\"-\"\n{$indent}    height=\"-\"\n{$indent}    loading=\"lazy\"\n{$indent}    decoding=\"async\"\n{$indent}>";
             } elseif ($type === 'repeater') {
                 $subFields = $field['fields'] ?? [];
                 $lines[] = "{$indent}@repeater('{$key}')";
 
                 foreach ($subFields as $subField) {
-                    $subType = $subField['type'] ?? 'text';
                     $subKey = $subField['key'];
+                    $subType = $subField['type'] ?? 'text';
 
                     if ($subType === 'link') {
                         $lines[] = "{$indent}    <a href=\"@field('{$subKey}')\" target=\"@field('{$subKey}_target')\">@field('{$subKey}_label')</a>";
+                    } elseif ($subType === 'image') {
+                        $lines[] = "{$indent}    <img\n{$indent}        src=\"@field('{$subKey}')\"\n{$indent}        alt=\"-\"\n{$indent}        title=\"-\"\n{$indent}        width=\"-\"\n{$indent}        height=\"-\"\n{$indent}        loading=\"lazy\"\n{$indent}        decoding=\"async\"\n{$indent}    >";
                     } else {
                         $lines[] = "{$indent}    @field('{$subKey}')";
                     }
