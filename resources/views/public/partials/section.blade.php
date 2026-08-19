@@ -18,24 +18,12 @@
     $hasTemplate = \Illuminate\Support\Facades\View::exists($templateView);
 @endphp
 
-@if ($hasContent)
-    @if ($hasTemplate)
-        @include($templateView, [
-            'sectionType' => $section->sectionType,
-            'section' => $section,
-            'locale' => $locale,
-            'content' => $content,
-            'fields' => $fields,
-        ])
-    @else
-        <section class="w-full bg-white py-12 sm:py-16 lg:py-20">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                @include('public.partials.dynamic-fields', [
-                    'fields' => $fields,
-                    'content' => $content,
-                    'path' => '',
-                ])
-            </div>
-        </section>
-    @endif
+@if ($hasContent && $hasTemplate)
+    @include($templateView, [
+        'sectionType' => $section->sectionType,
+        'section' => $section,
+        'locale' => $locale,
+        'content' => $content,
+        'fields' => $fields,
+    ])
 @endif

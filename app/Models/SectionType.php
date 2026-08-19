@@ -10,6 +10,10 @@ class SectionType extends Model
 {
     protected static function booted(): void
     {
+        static::created(function (SectionType $sectionType) {
+            app(SectionTemplateGenerator::class)->generate($sectionType);
+        });
+
         static::deleting(function (SectionType $sectionType) {
             app(SectionTemplateGenerator::class)->delete($sectionType);
         });
