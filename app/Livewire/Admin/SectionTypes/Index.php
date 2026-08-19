@@ -23,7 +23,7 @@ class Index extends Component
     {
         SectionType::findOrFail($sectionTypeId)->delete();
 
-        session()->flash('status', 'Section type deleted successfully.');
+        $this->dispatch('show-toast', message: 'Section type deleted successfully.');
     }
 
     public function render()

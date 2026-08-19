@@ -57,6 +57,8 @@ class PublicPageTest extends TestCase
         $this->createdTemplates[] = $path;
         File::ensureDirectoryExists(dirname($path));
         File::put($path, $markup);
+
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
     }
 
     private function makePage(string $status = 'published', string $idSlug = 'tentang-kami', string $enSlug = 'about-us'): Page

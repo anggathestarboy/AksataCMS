@@ -22,11 +22,18 @@
     @endphp
 
     <div class="mt-4">
-        <label class="block text-xs font-medium text-gray-600">
+        <label class="block text-xs font-medium text-gray-600"
+            x-data="{ show: false, timer: null }"
+            @mouseenter="timer = setTimeout(() => show = true, 100)"
+            @mouseleave="clearTimeout(timer); show = false">
             {{ $field['label'] }}
             @if ($field['required'])
                 <span class="text-red-600">*</span>
             @endif
+            <span x-show="show" x-transition
+                class="ml-1 text-[10px] font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                {{ $field['key'] }}
+            </span>
         </label>
 
         @if (($field['type'] ?? 'text') === 'textarea')
