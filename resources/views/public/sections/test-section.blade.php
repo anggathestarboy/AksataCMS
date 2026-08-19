@@ -14,7 +14,6 @@
 
    <br>
     @foreach (($content['test-loop'] ?? []) as $item)
-    <br>
         @field('loop-heading', $item)
         @field('loop-desc', $item)
     @endforeach
