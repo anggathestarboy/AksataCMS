@@ -1,58 +1,268 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Content Blog Page
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Content Blog Page is a web-based Content Management System (CMS) designed to simplify the process of creating, managing, and customizing website pages.
 
-## About Laravel
+The CMS uses a **Page Builder** approach, allowing users to build pages using reusable sections without having to modify the source code directly.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Content Blog Page is built with **Laravel 13** as its primary framework and **Laravel Jetstream** for authentication and user management.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Section Management
 
-## Learning Laravel
+Create and manage reusable sections based on your website's needs. Each section can use a specific type and template that can be customized according to the required content.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Page Management
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Create and manage website pages by combining previously created sections. Sections can be arranged and customized to create different page layouts.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Menu Management
 
-## Agentic Development
+Manage website navigation from a centralized interface. Create and organize navigation elements such as headers, sidebars, and other menus.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Multi-Language Support
+
+Content Blog Page provides built-in multi-language support, allowing content to be managed and presented in multiple languages.
+
+### Page Builder
+
+The Page Builder is the core concept of Content Blog Page. Users can create reusable sections and combine them to build different pages without modifying the application's source code.
+
+## Technology Stack
+
+* Laravel 13
+* Laravel Jetstream
+* PHP
+* MySQL
+* Composer
+* Node.js
+* NPM
+
+## Requirements
+
+Before installing Content Blog Page, make sure the following requirements are available on your system:
+
+* PHP compatible with Laravel 13
+* Composer
+* Node.js
+* NPM
+* MySQL or another supported database
+* A local development environment such as Laragon, XAMPP, Laravel Herd, or a similar environment
+
+## Installation
+
+Clone the repository:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://gitlab.skwn.dev/sitespirit/rnd/cms-content-blocks
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Navigate to the project directory:
 
-## Contributing
+```bash
+cd content-blog-page
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Install the PHP dependencies:
 
-## Code of Conduct
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Create the environment file:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+On Windows, you can also copy `.env.example` manually and rename it to `.env`.
 
-## License
+Generate the application key:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan key:generate
+```
+
+## Database Configuration
+
+Open the `.env` file and configure your database connection:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=content_blog_page
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Adjust the database values according to your local environment.
+
+Run the database migrations:
+
+```bash
+php artisan migrate
+```
+
+If the project includes database seeders, run:
+
+```bash
+php artisan db:seed
+```
+
+After running the database seeder, a default user will be created.
+
+### Default User
+
+The following credentials can be used to log in to the CMS:
+
+| Field    | Value               |
+| -------- | ------------------- |
+| Email    | `anggara@gmail.com` |
+| Password | `aksata2003`        |
+
+Use these credentials to access the application after the seeding process has completed successfully.
+
+**Security Notice:** For production environments, it is strongly recommended to change the default password immediately after the first login.
+
+Alternatively, migrations and seeders can be executed together:
+
+```bash
+php artisan migrate --seed
+```
+
+## Frontend Installation
+
+Install the frontend dependencies:
+
+```bash
+npm install
+```
+
+Start the Vite development server:
+
+```bash
+npm run dev
+```
+
+In another terminal, start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+The application will be available at the URL provided by Laravel.
+
+## Page Builder Concept
+
+Content Blog Page is built around three main components:
+
+```text
+Section
+   |
+   v
+Page
+   |
+   v
+Menu
+```
+
+### Section
+
+A **Section** is a reusable component that acts as a building block for a page.
+
+### Page
+
+A **Page** consists of one or more sections that can be arranged according to the required layout.
+
+### Menu
+
+A **Menu** connects pages to the website's navigation system, allowing users to create and organize navigation elements.
+
+## Page Building Workflow
+
+A typical workflow for creating a page is:
+
+1. Create a section.
+2. Select the appropriate section type and template.
+3. Customize the section content.
+4. Create a new page.
+5. Add the required sections to the page.
+6. Arrange the sections according to the desired layout.
+7. Configure the page's language if required.
+8. Add the page to the website navigation through Menu Management.
+
+This approach allows sections to be reused across multiple pages and makes website management more flexible.
+
+## Multi-Language
+
+Content Blog Page includes multi-language support for managing website content in different languages.
+
+The system can be configured to support multiple languages depending on the requirements of the website.
+
+## Development
+
+To run the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+Run Vite in development mode:
+
+```bash
+npm run dev
+```
+
+If you are using a local web server such as Laragon or XAMPP, the project can also be configured according to your local server environment.
+
+## Clearing Cache
+
+If you make changes to the application configuration, routes, views, or other cached resources, you can clear the application cache using:
+
+```bash
+php artisan optimize:clear
+```
+
+## Production Deployment
+
+Before deploying the application to a production environment, make sure the production environment is properly configured.
+
+Install PHP dependencies:
+
+```bash
+composer install --optimize-autoloader --no-dev
+```
+
+Run database migrations:
+
+```bash
+php artisan migrate --force
+```
+
+Optimize the Laravel application:
+
+```bash
+php artisan optimize
+```
+
+Build the frontend assets:
+
+```bash
+npm install
+npm run build
+```
+
+Make sure the production `.env` configuration is properly set:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+```
+
+Additional directories and components may be added as the CMS continues to evolve.
+
+## Contribution
+
+Contributions to Content Blog Page are welcome. When contributing, create a separate branch for your changes and ensure that the implementation follows the existing project structure and coding standards.
