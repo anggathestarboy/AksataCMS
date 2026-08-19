@@ -47,6 +47,14 @@ class FieldHelper
             return (string) $value;
         }
 
+        if (is_array($value)) {
+            if (isset($value['link_type']) || isset($value['url'])) {
+                return self::resolveLinkUrl($value);
+            }
+
+            return '';
+        }
+
         return e($value);
     }
 

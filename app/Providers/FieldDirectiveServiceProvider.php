@@ -25,6 +25,9 @@ class FieldDirectiveServiceProvider extends ServiceProvider
             return "<?php
                 \$__repeaterItems = data_get(\$content ?? [], {$expression}, []);
                 if (count(\$__repeaterItems) > 0):
+                    \$__parentFields = \$fields ?? [];
+                    \$__repeaterDef = collect(\$__parentFields)->firstWhere('key', {$expression});
+                    \$fields = \$__repeaterDef['fields'] ?? [];
                     foreach (\$__repeaterItems as \$item):
             ?>";
         });
@@ -32,6 +35,7 @@ class FieldDirectiveServiceProvider extends ServiceProvider
         Blade::directive('endrepeater', function (): string {
             return "<?php
                     endforeach;
+                    \$fields = \$__parentFields ?? [];
                 endif;
             ?>";
         });

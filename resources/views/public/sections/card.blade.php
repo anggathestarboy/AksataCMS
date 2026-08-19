@@ -1,20 +1,19 @@
 {{--
-    Template Section: Card
+    Template Section: card (card)
     =========================================================
-    Grid cards dengan repeater.
+    Variabel: $sectionType, $section, $locale, $content, $fields
 
-    Ganti 'heading', 'cards', 'title', 'description', 'image'
-    dengan key field kamu.
+    Contoh akses:
+        @field('key-name')
     =========================================================
 --}}
 <section>
-    @field('card-heading')
-
-    @foreach (($content['list-card'] ?? []) as $item)
-        <div>
-            <img src="@field('image-card', $item)" alt="">
-            <h3>@field('heading-card', $item)</h3>
-            <p>@field('desc-card', $item)</p>
-        </div>
-    @endforeach
+        @field('card-heading')
+    @field('card-desc')
+    @repeater('list-card')
+        @field('heading-card')
+        @field('desc-card')
+        @field('image-card')
+        <a href="@field('link-card')" target="@field('link-card_target')">@field('link-card_label')</a>
+    @endrepeater
 </section>

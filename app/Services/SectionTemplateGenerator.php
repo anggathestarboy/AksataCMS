@@ -101,7 +101,14 @@ BLADE;
                 $lines[] = "{$indent}@repeater('{$key}')";
 
                 foreach ($subFields as $subField) {
-                    $lines[] = "{$indent}    @field('{$subField['key']}')";
+                    $subType = $subField['type'] ?? 'text';
+                    $subKey = $subField['key'];
+
+                    if ($subType === 'link') {
+                        $lines[] = "{$indent}    <a href=\"@field('{$subKey}')\" target=\"@field('{$subKey}_target')\">@field('{$subKey}_label')</a>";
+                    } else {
+                        $lines[] = "{$indent}    @field('{$subKey}')";
+                    }
                 }
 
                 $lines[] = "{$indent}@endrepeater";
