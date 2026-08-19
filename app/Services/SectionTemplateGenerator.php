@@ -94,15 +94,17 @@ BLADE;
             $key = $field['key'];
             $type = $field['type'] ?? 'text';
 
-            if ($type === 'repeater') {
+            if ($type === 'link') {
+                $lines[] = "{$indent}<a href=\"@field('{$key}')\" target=\"@field('{$key}_target')\">@field('{$key}_label')</a>";
+            } elseif ($type === 'repeater') {
                 $subFields = $field['fields'] ?? [];
-                $lines[] = "{$indent}@foreach ((\$content['{$key}'] ?? []) as \$item)";
+                $lines[] = "{$indent}@repeater('{$key}')";
 
                 foreach ($subFields as $subField) {
-                    $lines[] = "{$indent}    @field('{$subField['key']}', \$item)";
+                    $lines[] = "{$indent}    @field('{$subField['key']}')";
                 }
 
-                $lines[] = "{$indent}@endforeach";
+                $lines[] = "{$indent}@endrepeater";
             } else {
                 $lines[] = "{$indent}@field('{$key}')";
             }

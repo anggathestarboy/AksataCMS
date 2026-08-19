@@ -1,4 +1,4 @@
-<div class="py-10">
+<div class="py-10" x-data @keydown.window="if ((event.ctrlKey || event.metaKey) && event.key === 's') { event.preventDefault(); $wire.save(); }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-semibold text-gray-900">Edit Section Type</h1>
@@ -31,13 +31,25 @@
                         Regenerate Template
                     </button>
                 </div>
-
-                @if (session('template_status'))
-                    <div class="mt-4 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
-                        {{ session('template_status') }}
-                    </div>
-                @endif
             </div>
         </div>
+    </div>
+
+    {{-- Toast Notification --}}
+    <div x-data="{ show: false, message: '', type: 'success' }"
+        x-on:show-toast.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
+        x-show="show"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-4"
+        x-cloak
+        class="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white"
+        :class="type === 'success' ? 'bg-emerald-600' : 'bg-red-600'">
+        <svg x-show="type === 'success'" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <svg x-show="type !== 'success'" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <span x-text="message"></span>
     </div>
 </div>

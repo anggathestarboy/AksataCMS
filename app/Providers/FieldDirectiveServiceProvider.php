@@ -16,8 +16,23 @@ class FieldDirectiveServiceProvider extends ServiceProvider
                     \$content ?? [],
                     \$fields ?? [],
                     \$__fieldParams[0],
-                    \$__fieldParams[1] ?? null
+                    \$__fieldParams[1] ?? (\$item ?? null)
                 );
+            ?>";
+        });
+
+        Blade::directive('repeater', function (string $expression): string {
+            return "<?php
+                \$__repeaterItems = data_get(\$content ?? [], {$expression}, []);
+                if (count(\$__repeaterItems) > 0):
+                    foreach (\$__repeaterItems as \$item):
+            ?>";
+        });
+
+        Blade::directive('endrepeater', function (): string {
+            return "<?php
+                    endforeach;
+                endif;
             ?>";
         });
     }
