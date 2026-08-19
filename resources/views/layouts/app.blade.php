@@ -67,6 +67,12 @@
                                 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />',
                             ],
                             [
+                                'label' => __('Media'),
+                                'route' => 'admin.media.index',
+                                'active' => request()->routeIs('admin.media.*'),
+                                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z" />',
+                            ],
+                            [
                                 'label' => __('Settings'),
                                 'route' => 'admin.settings.index',
                                 'active' => request()->routeIs('admin.settings.*'),
@@ -105,6 +111,7 @@
                         request()->routeIs('admin.pages.*') => __('Pages'),
                         request()->routeIs('admin.section-types.*') => __('Section Types'),
                         request()->routeIs('admin.navigations.*') => __('Navigations'),
+                        request()->routeIs('admin.media.*') => __('Media'),
                         request()->routeIs('admin.settings.*') => __('Settings'),
                         request()->routeIs('profile.show') => __('Profile'),
                         request()->routeIs('api-tokens.*') => __('API Tokens'),
@@ -170,6 +177,27 @@
         </div>
 
         @stack('modals')
+
+        @include('livewire.admin.partials.confirm-modal')
+        @livewire('admin.media.picker')
+
+        {{-- Global Toast Notification --}}
+        <div x-data="{ show: false, message: '', type: 'success' }"
+            x-on:show-toast.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-4"
+            x-cloak
+            class="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white"
+            :class="type === 'success' ? 'bg-emerald-600' : 'bg-red-600'">
+            <svg x-show="type === 'success'" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <svg x-show="type !== 'success'" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <span x-text="message"></span>
+        </div>
 
         @livewireScripts
     </body>

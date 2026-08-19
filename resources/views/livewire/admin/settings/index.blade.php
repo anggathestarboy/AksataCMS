@@ -24,12 +24,31 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Default SEO Image</label>
                     <p class="mt-1 text-xs text-gray-500">Used as fallback og:image when a page has no image set.</p>
-                    @if (is_string($defaultSeoImage) && $defaultSeoImage !== '' && \Illuminate\Support\Facades\Storage::disk('public')->exists($defaultSeoImage))
-                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($defaultSeoImage) }}" alt="Current default SEO image"
-                            class="mt-3 h-32 w-auto rounded-lg border border-gray-200 object-cover">
-                    @endif
-                    <input type="file" wire:model="defaultSeoImage" accept="image/*"
-                        class="mt-3 block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100">
+                    <div x-data="{
+                        preview: @js((is_string($defaultSeoImage) && $defaultSeoImage !== '' && \Illuminate\Support\Facades\Storage::disk('public')->exists($defaultSeoImage)) ? \Illuminate\Support\Facades\Storage::disk('public')->url($defaultSeoImage) : ''),
+                        fieldPath: 'defaultSeoImage',
+                    }"
+                    x-on:media-selected.window="
+                        if ($event.detail.fieldPath === fieldPath) {
+                            preview = $event.detail.url;
+                            $wire.set(fieldPath, $event.detail.path);
+                        }
+                    ">
+                        <template x-if="preview">
+                            <img :src="preview" alt="Default SEO Image"
+                                class="mt-3 h-32 w-auto rounded-lg border border-gray-200 object-cover">
+                        </template>
+                        <div class="flex items-center gap-2 mt-3">
+                            <button type="button"
+                                x-on:click="$dispatch('open-media-picker', { fieldPath: fieldPath })"
+                                class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z"/></svg>
+                                Browse Media
+                            </button>
+                            <input type="file" wire:model="defaultSeoImage" accept="image/*"
+                                class="block flex-1 text-sm text-gray-500 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-indigo-600 hover:file:bg-indigo-100">
+                        </div>
+                    </div>
                     @error('defaultSeoImage')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
