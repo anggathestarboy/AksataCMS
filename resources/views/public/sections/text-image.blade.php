@@ -18,7 +18,7 @@
                     width="-"
                     height="-"
                     loading="lazy"
-                    decoding="async"
+              
                     class="w-full h-auto rounded-xl shadow-lg"
                 >
             </div>
