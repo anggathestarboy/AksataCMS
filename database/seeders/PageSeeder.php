@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Page;
+use App\Models\Setting;
 use Illuminate\Database\Seeder;
 
 class PageSeeder extends Seeder
@@ -66,6 +67,6 @@ class PageSeeder extends Seeder
         ]);
 
         // Set home_page_id setting to point to the homepage
-        \App\Models\Setting::set('home_page_id', (string) $homepage->id);
+        Setting::set('home_page_id', (string) $homepage->id);
     }
 }

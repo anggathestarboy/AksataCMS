@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\SectionTypes;
 use App\Models\SectionType;
 use App\Services\SectionTemplateGenerator;
 use Livewire\Attributes\Layout;
-use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Create extends SectionTypeForm

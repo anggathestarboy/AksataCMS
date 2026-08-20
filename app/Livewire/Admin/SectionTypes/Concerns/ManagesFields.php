@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\SectionTypes\Concerns;
 
+use App\Services\DynamicFormBuilder;
 use Illuminate\Support\Str;
 
 trait ManagesFields
@@ -109,6 +110,6 @@ trait ManagesFields
      */
     protected function normalizeFields(): array
     {
-        return \App\Services\DynamicFormBuilder::build($this->fields);
+        return DynamicFormBuilder::build($this->fields);
     }
 }

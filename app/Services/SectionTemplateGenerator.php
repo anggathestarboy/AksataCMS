@@ -15,12 +15,12 @@ class SectionTemplateGenerator
 
     public function path(string $slug): string
     {
-        return $this->directory() . DIRECTORY_SEPARATOR . $slug . '.blade.php';
+        return $this->directory().DIRECTORY_SEPARATOR.$slug.'.blade.php';
     }
 
     public function viewName(string $slug): string
     {
-        return 'public.sections.' . $slug;
+        return 'public.sections.'.$slug;
     }
 
     public function exists(SectionType|string $slugOrType): bool
@@ -97,7 +97,7 @@ BLADE;
             if ($type === 'link') {
                 $lines[] = "{$indent}<a href=\"@field('{$key}')\" target=\"@field('{$key}_target')\">@field('{$key}_label')</a>";
             } elseif ($type === 'image') {
-                $lines[] = "{$indent}<img\n{$indent}    src=\"@field('{$key}')\"\n{$indent}    alt=\"-\"\n{$indent}    title=\"-\"\n{$indent}    width=\"-\"\n{$indent}    height=\"-\"\n{$indent}    loading=\"lazy\"\n{$indent}    decoding=\"async\"\n{$indent}>";
+                $lines[] = "{$indent}<img\n{$indent}    src=\"@field('{$key}')\"\n{$indent}    width=\"@field('{$key}_width')\"\n{$indent}    height=\"@field('{$key}_height')\"\n{$indent}    alt=\"@field('{$key}_alt')\"\n{$indent}    loading=\"@field('{$key}_loading')\"\n{$indent}    decoding=\"async\"\n{$indent}>";
             } elseif ($type === 'repeater') {
                 $subFields = $field['fields'] ?? [];
                 $lines[] = "{$indent}@repeater('{$key}')";
@@ -109,7 +109,7 @@ BLADE;
                     if ($subType === 'link') {
                         $lines[] = "{$indent}    <a href=\"@field('{$subKey}')\" target=\"@field('{$subKey}_target')\">@field('{$subKey}_label')</a>";
                     } elseif ($subType === 'image') {
-                        $lines[] = "{$indent}    <img\n{$indent}        src=\"@field('{$subKey}')\"\n{$indent}        alt=\"-\"\n{$indent}        title=\"-\"\n{$indent}        width=\"-\"\n{$indent}        height=\"-\"\n{$indent}        loading=\"lazy\"\n{$indent}        decoding=\"async\"\n{$indent}    >";
+                        $lines[] = "{$indent}    <img\n{$indent}        src=\"@field('{$subKey}')\"\n{$indent}        width=\"@field('{$subKey}_width')\"\n{$indent}        height=\"@field('{$subKey}_height')\"\n{$indent}        alt=\"@field('{$subKey}_alt')\"\n{$indent}        loading=\"@field('{$subKey}_loading')\"\n{$indent}        decoding=\"async\"\n{$indent}    >";
                     } else {
                         $lines[] = "{$indent}    @field('{$subKey}')";
                     }

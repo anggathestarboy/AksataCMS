@@ -39,7 +39,7 @@ class Page extends Model
             return null;
         }
 
-        return '/' . $translation->locale . '/' . $translation->slug;
+        return '/'.$translation->locale.'/'.$translation->slug;
     }
 
     public function sections(): HasMany

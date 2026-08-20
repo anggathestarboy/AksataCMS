@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PublicPageController;
+use App\Livewire\Admin\Media\Edit as MediaEdit;
 use App\Livewire\Admin\Media\Index as MediaIndex;
 use App\Livewire\Admin\Navigations\Create as NavigationCreate;
 use App\Livewire\Admin\Navigations\Edit as NavigationEdit;
@@ -43,6 +44,7 @@ Route::middleware([
         Route::get('navigations/{navigation}/items', NavigationItemBuilder::class)->name('navigations.items');
 
         Route::get('media', MediaIndex::class)->name('media.index');
+        Route::get('media/{id}/edit', MediaEdit::class)->name('media.edit');
 
         Route::get('settings', SettingsIndex::class)->name('settings.index');
     });
