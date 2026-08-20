@@ -6,7 +6,6 @@ use App\Models\SectionType;
 use App\Services\SectionTemplateGenerator;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
-use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Edit extends SectionTypeForm
@@ -44,7 +43,7 @@ class Edit extends SectionTypeForm
 
         app(SectionTemplateGenerator::class)->rename($this->sectionType, $oldSlug);
 
-        session()->flash('status', 'Section type updated successfully.');
+        $this->dispatch('show-toast', message: 'Section type updated successfully.');
 
         return redirect()->route('admin.section-types.edit', $this->sectionType);
     }
@@ -53,14 +52,14 @@ class Edit extends SectionTypeForm
     {
         app(SectionTemplateGenerator::class)->generate($this->sectionType, force: true);
 
-        session()->flash('template_status', 'The template file has been regenerated with the default markup.');
+        $this->dispatch('show-toast', message: 'The template file has been regenerated with the default markup.');
     }
 
     public function delete()
     {
         $this->sectionType->delete();
 
-        session()->flash('status', 'Section type deleted successfully.');
+        $this->dispatch('show-toast', message: 'Section type deleted successfully.');
 
         return redirect()->route('admin.section-types.index');
     }

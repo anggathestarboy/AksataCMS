@@ -23,12 +23,15 @@ class Index extends Component
 
     public string $homePageId = '';
 
+    public string $favicon = '';
+
     public function mount(): void
     {
         $this->siteTitle = (string) Setting::get('site_title', config('app.name', 'ContentBlock'));
         $this->siteFooter = (string) Setting::get('site_footer', '');
         $this->defaultSeoImage = (string) Setting::get('default_seo_image', '');
         $this->homePageId = (string) Setting::get('home_page_id', '');
+        $this->favicon = (string) Setting::get('favicon', '');
     }
 
     public function updatedDefaultSeoImage(): void
@@ -54,6 +57,7 @@ class Index extends Component
         Setting::set('site_footer', $this->siteFooter);
         Setting::set('default_seo_image', (string) ($this->defaultSeoImage ?? ''));
         Setting::set('home_page_id', $this->homePageId);
+        Setting::set('favicon', $this->favicon);
 
         session()->flash('status', 'Settings saved successfully.');
     }

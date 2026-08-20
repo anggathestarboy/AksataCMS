@@ -10,7 +10,7 @@
             <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700">Status</span>
                 <div class="flex items-center gap-3">
-                    @if ($page->status === 'published' && $page->url() !== null)
+                    @if ($page && $page->status === 'published' && $page->url() !== null)
                         <a href="{{ $page->url() }}" target="_blank" rel="noopener"
                             class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full hover:bg-emerald-100 transition">
                             View Live
@@ -92,9 +92,31 @@
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-gray-500">OG Image URL</label>
-                <input type="text" wire:model.live="translations.{{ $activeLocale }}.meta.og_image"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <label class="block text-xs font-medium text-gray-500">OG Image</label>
+                <div x-data="{
+                    preview: @js(!empty(data_get($translations[$activeLocale]['meta'] ?? [], 'og_image')) ? \Illuminate\Support\Facades\Storage::disk('public')->url(data_get($translations[$activeLocale]['meta'] ?? [], 'og_image')) : ''),
+                    fieldPath: 'translations.{{ $activeLocale }}.meta.og_image',
+                }"
+                x-on:media-selected.window="
+                    if ($event.detail.fieldPath === fieldPath) {
+                        preview = $event.detail.url;
+                        $wire.set(fieldPath, $event.detail.path);
+                    }
+                ">
+                    <template x-if="preview">
+                        <img :src="preview" alt="OG Image" class="mt-2 h-20 w-auto rounded-md border border-gray-200 object-cover">
+                    </template>
+                    <div class="flex items-center gap-2 mt-2">
+                        <button type="button"
+                            x-on:click="$dispatch('open-media-picker', { fieldPath: fieldPath })"
+                            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 shrink-0">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z"/></svg>
+                            Browse Media
+                        </button>
+                        <input type="text" wire:model.live="translations.{{ $activeLocale }}.meta.og_image" placeholder="Or paste path..."
+                            class="block flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-xs">
+                    </div>
+                </div>
                 @error('translations.' . $activeLocale . '.meta.og_image')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror

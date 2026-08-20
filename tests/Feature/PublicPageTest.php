@@ -7,6 +7,7 @@ use App\Models\Section;
 use App\Models\SectionType;
 use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -57,6 +58,8 @@ class PublicPageTest extends TestCase
         $this->createdTemplates[] = $path;
         File::ensureDirectoryExists(dirname($path));
         File::put($path, $markup);
+
+        Artisan::call('view:clear');
     }
 
     private function makePage(string $status = 'published', string $idSlug = 'tentang-kami', string $enSlug = 'about-us'): Page

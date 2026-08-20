@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\SectionTypes;
 use App\Models\SectionType;
 use App\Services\SectionTemplateGenerator;
 use Livewire\Attributes\Layout;
-use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Create extends SectionTypeForm
@@ -25,7 +24,7 @@ class Create extends SectionTypeForm
 
         app(SectionTemplateGenerator::class)->generate($sectionType);
 
-        session()->flash('status', 'Section type created successfully.');
+        $this->dispatch('show-toast', message: 'Section type created successfully.');
 
         return redirect()->route('admin.section-types.index');
     }

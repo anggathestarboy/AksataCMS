@@ -305,7 +305,7 @@ class AdminSectionTypesTest extends TestCase
 
         $this->assertFileExists($path);
         $this->assertStringContainsString('Template Section: Hero Banner (hero-banner)', File::get($path));
-        $this->assertStringContainsString("{{ \$content['heading'] ?? '' }}", File::get($path));
+        $this->assertStringContainsString("@field('heading')", File::get($path));
     }
 
     public function test_renaming_section_type_slug_renames_the_template_file(): void

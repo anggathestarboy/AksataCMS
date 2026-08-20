@@ -99,6 +99,17 @@ class Edit extends PageForm
         $this->dispatch('show-toast', message: 'Page updated successfully.');
     }
 
+    public function handleImageSelection(string $wireKey, array $data): void
+    {
+        data_set($this, $wireKey, [
+            'path' => $data['path'] ?? '',
+            'width' => $data['width'] ?? null,
+            'height' => $data['height'] ?? null,
+            'alt' => $data['alt'] ?? '',
+            'loading' => $data['loading'] ?? 'lazy',
+        ]);
+    }
+
     private function validateAllSectionContent(): void
     {
         $errors = [];
@@ -402,8 +413,8 @@ class Edit extends PageForm
         }
 
         $this->dispatch('show-toast', message: 'Content copied from '
-            . (config('cms.locales')[$default] ?? $default)
-            . ' to all other languages.');
+            .(config('cms.locales')[$default] ?? $default)
+            .' to all other languages.');
     }
 
     public function render()
