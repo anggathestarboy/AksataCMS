@@ -53,6 +53,41 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-medium text-gray-700">Favicon</label>
+                    <p class="mt-1 text-xs text-gray-500">Icon displayed in the browser tab. Recommended: square image (32x32 or 64x64).</p>
+                    <div x-data="{
+                        preview: @js((is_string($favicon) && $favicon !== '' && \Illuminate\Support\Facades\Storage::disk('public')->exists($favicon)) ? \Illuminate\Support\Facades\Storage::disk('public')->url($favicon) : ''),
+                        fieldPath: 'favicon',
+                    }"
+                    x-on:media-selected.window="
+                        if ($event.detail.fieldPath === fieldPath) {
+                            preview = $event.detail.url;
+                            $wire.set(fieldPath, $event.detail.path);
+                        }
+                    ">
+                        <template x-if="preview">
+                            <div class="relative mt-3 inline-block">
+                                <img :src="preview" alt="Favicon"
+                                    class="h-16 w-16 rounded-lg border border-gray-200 object-cover">
+                                <button type="button" x-on:click="preview = ''; $wire.set('favicon', '')"
+                                    class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] hover:bg-red-600 shadow">&times;</button>
+                            </div>
+                        </template>
+                        <div class="mt-3">
+                            <button type="button"
+                                x-on:click="$dispatch('open-media-picker', { fieldPath: fieldPath })"
+                                class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100 shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z"/></svg>
+                                Browse Media
+                            </button>
+                        </div>
+                    </div>
+                    @error('favicon')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="siteFooter" class="block text-sm font-medium text-gray-700">Site Footer</label>
                     <textarea id="siteFooter" wire:model="siteFooter" rows="4"
                         placeholder="Enter your desc"

@@ -5,7 +5,7 @@
                 @field('card-heading')
             </h2>
 
-            <p class="mt-3 text-gray-700 whitespace-pre-line max-w-2xl">
+            <p class="mt-3 text-gray-700  max-w-2xl">
                 @field('card-desc')
             </p>
         </div>

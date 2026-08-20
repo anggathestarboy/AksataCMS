@@ -10,6 +10,7 @@
         $siteTitle = App\Models\Setting::get('site_title', config('app.name', 'ContentBlock'));
         $siteFooter = (string) App\Models\Setting::get('site_footer', '');
         $defaultSeoImage = (string) App\Models\Setting::get('default_seo_image', '');
+        $favicon = (string) App\Models\Setting::get('favicon', '');
 
         $meta = $translation->meta ?? [];
         $title = trim((string) ($meta['meta_title'] ?? '')) !== '' ? $meta['meta_title'] : $translation->title;
@@ -25,6 +26,10 @@
     @endphp
 
     <title>{{ $title }}</title>
+
+    @if ($favicon !== '')
+        <link rel="icon" type="image/x-icon" href="{{ Illuminate\Support\Facades\Storage::disk('public')->url($favicon) }}">
+    @endif
 
     <meta name="description" content="{{ $description }}">
 
