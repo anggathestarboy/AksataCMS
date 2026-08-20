@@ -10,7 +10,7 @@ class NavigationSeeder extends Seeder
 {
     public function run(): void
     {
-        $navbar = \App\Models\Navigation::create([
+        $navbar = Navigation::create([
             'name' => 'navbar',
             'slug' => 'navbar',
         ]);

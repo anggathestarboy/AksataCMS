@@ -33,11 +33,11 @@ class FieldDirectiveServiceProvider extends ServiceProvider
         });
 
         Blade::directive('endrepeater', function (): string {
-            return "<?php
+            return '<?php
                     endforeach;
-                    \$fields = \$__parentFields ?? [];
+                    $fields = $__parentFields ?? [];
                 endif;
-            ?>";
+            ?>';
         });
     }
 }

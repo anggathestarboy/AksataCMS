@@ -3,10 +3,8 @@
 namespace App\Livewire\Admin\Pages;
 
 use App\Models\Page;
-use Livewire\Attributes\Layout;
-use Livewire\Component;
-
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 
 #[Layout('layouts.app')]
 class Create extends PageForm

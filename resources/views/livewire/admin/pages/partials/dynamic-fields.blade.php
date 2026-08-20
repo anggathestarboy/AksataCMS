@@ -45,12 +45,41 @@
                 class="mt-1 block w-full font-mono text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
             <p class="mt-1 text-[10px] text-gray-400">You can paste formatted HTML content here.</p>
         @elseif (($field['type'] ?? 'text') === 'image')
-            @if (filled($value))
-                <img src="{{ Storage::disk('public')->url($value) }}" alt="{{ $field['label'] }}"
-                    class="mt-2 h-20 w-auto rounded-md border border-gray-200 object-cover">
-            @endif
-            <input type="file" wire:model="{{ $uploadPrefix }}{{ $fieldPath }}"
-                class="mt-2 block w-full text-xs text-gray-500 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-[10px] file:font-semibold file:text-indigo-600 hover:file:bg-indigo-100">
+            <div x-data="{
+                preview: @js(filled($value) ? \Illuminate\Support\Facades\Storage::disk('public')->url(is_array($value) ? ($value['path'] ?? '') : $value) : ''),
+                fieldPath: @js($fieldPath),
+                sectionId: @js($sectionId ?? null),
+                wireKey: @js($wirePrefix . $fieldPath),
+            }"
+            x-on:media-selected.window="
+                if ($event.detail.fieldPath === fieldPath && String($event.detail.sectionId ?? '') === String(sectionId ?? '')) {
+                    preview = $event.detail.url;
+                    $wire.handleImageSelection(wireKey, {
+                        path: $event.detail.path,
+                        width: $event.detail.width,
+                        height: $event.detail.height,
+                        alt: $event.detail.alt,
+                        loading: $event.detail.loading,
+                    });
+                }
+            ">
+                <template x-if="preview">
+                    <div class="relative mt-2 inline-block">
+                        <img :src="preview" alt="{{ $field['label'] }}"
+                            class="h-32 w-auto rounded-md border border-gray-200 object-cover">
+                        <button type="button" x-on:click="preview = ''; $wire.handleImageSelection(wireKey, {path: '', width: null, height: null, alt: '', loading: 'lazy'})"
+                            class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] hover:bg-red-600 shadow">&times;</button>
+                    </div>
+                </template>
+                <div class="mt-2">
+                    <button type="button"
+                        x-on:click="$dispatch('open-media-picker', { fieldPath: fieldPath, sectionId: sectionId })"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z"/></svg>
+                        Browse Media
+                    </button>
+                </div>
+            </div>
             @error($uploadPrefix . $fieldPath)
                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
             @enderror

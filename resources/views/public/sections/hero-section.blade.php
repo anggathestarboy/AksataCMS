@@ -1,18 +1,10 @@
-{{-- 
-    Template Section: Hero Section (hero-section)
-    =========================================================
-    Variabel: $sectionType, $section, $locale, $content, $fields
-    =========================================================
---}}
-
 <section class="relative w-full bg-gray-900 overflow-hidden">
     <img
         src="@field('image')"
-        alt="-"
-        title="-"
-        width="-"
-        height="-"
-        loading="lazy"
+        width="@field('image_width')"
+        height="@field('image_height')"
+        alt="@field('image_alt')"
+        loading="@field('image_loading')"
         decoding="async"
         class="absolute inset-0 w-full h-full object-cover"
     >
